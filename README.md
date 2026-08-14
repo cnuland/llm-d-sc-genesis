@@ -41,7 +41,9 @@ evals → Fable review → maintainer judgment.** Fable cannot overrule a failin
 ```
 AGENTS.md                    worker engineering contract (OpenCode reads this)
 CONTRIBUTING.md              upstream charter + hard bans
-specs/                       one directory per change: research.md, spec.md, test-plan.md
+specs/                       one directory per change/version (research/spec/design/
+                             test-plan/acceptance + evidence/); 0.1-mvp is the active spec,
+                             0.20-0.30 are phase stubs (see docs/VERSIONS.md)
   TEMPLATE/                  copy to start a new spec
 .agent/state/current.md      working memory (aggressively rewritten, not history)
 .agent/memory/lessons/       durable episodic lessons (evidence-cited, PR-reviewed)
@@ -51,7 +53,10 @@ hack/                        deterministic scripts: build, verify, test-all, tes
 pipeline/                    the conductor: state machine + watchdog + gates + review bundle
 evals/                       eval.yaml, datasets, and the Fable reviewer rubric
 .github/workflows/           fast-ci (every push), reviewer + validation (promotion)
-docs/                        architecture notes promoted from lessons
+docs/                        SDD.md, TDD.md, VERSIONS.md (0.x roadmap), PROCESS_REVIEW.md,
+                             architecture notes
+tests/                       TEST_MATRIX.md (evidence-anchored test IDs), HOMELAB.md,
+                             GITHUB_ACTIONS.md, DUMMY_PRAXIS.md, fixtures/modelcar/
 ```
 
 ## The conducted loop (home lab)
