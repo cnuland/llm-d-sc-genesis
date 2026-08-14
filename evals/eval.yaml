@@ -1,0 +1,26 @@
+# Declarative eval skeleton (ODH Agent Eval Harness shape).
+# Grows with the project: golden set is built from OUR history (bugs, regressions,
+# reverted PRs, weakened tests), not public benchmarks.
+version: 1
+name: llm-d-sc-worker-evals
+description: >
+  Repository-specific behavioral evals for the implementation worker and reviewer.
+  Populated as the first specs land; every skill and model upgrade runs against this.
+datasets: []   # evals/datasets/<name>/cases.jsonl
+judges:
+  - name: deterministic
+    type: code
+    entrypoint: ../hack/verify
+  - name: fable-review
+    type: llm
+    provider: anthropic       # wired later; adapter, not an assumed native feature
+    rubric: rubrics/upstream-review.md
+thresholds:
+  acceptance_pass_rate: 1.0   # per-criterion; a criterion either proves or it doesn't
+metrics_of_record:
+  - acceptance-test pass rate
+  - regression rate
+  - first-review PASS rate
+  - test-weakening frequency
+  - scope-drift findings
+  - revert rate after merge

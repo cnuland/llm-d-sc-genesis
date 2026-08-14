@@ -1,0 +1,22 @@
+#!/usr/bin/env bash
+# The deterministic publisher. The ONLY path to git commit/push for agent work.
+# Refuses to run without a PASS verdict newer than the working-tree changes.
+# Usage: ./hack/publish-reviewed <spec-id> <commit-message-file>
+set -euo pipefail
+cd "$(dirname "$0")/.."
+ID="${1:?usage: publish-reviewed <spec-id> <msg-file>}"
+MSG="${2:?usage: publish-reviewed <spec-id> <msg-file>}"
+VERDICT="artifacts/review/verdict.json"
+test -f "$VERDICT" || { echo "[publish] FAIL: no reviewer verdict at $VERDICT"; exit 1; }
+python3 - "$VERDICT" <<'PY'
+import json,sys
+v=json.load(open(sys.argv[1]))
+assert v.get("decision")=="PASS", f"[publish] FAIL: reviewer decision is {v.get('decision')!r}, not PASS"
+PY
+./hack/verify
+BR="agent/$ID"
+git checkout -B "$BR" 2>/dev/null || git checkout "$BR"
+git add -A ':!artifacts'
+git commit -F "$MSG"
+git push -u origin "$BR"
+echo "[publish] pushed $(git rev-parse --short HEAD) to $BR"
