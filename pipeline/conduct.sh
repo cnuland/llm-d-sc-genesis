@@ -23,7 +23,7 @@ worker_turn "$ID" "Read .agent/state/current.md FIRST, then $DIR/spec.md, $DIR/t
 test -f "$DIR/evidence/$AC/RED.md" || { log "no RED evidence — HUMAN_REQUIRED"; exit 2; }
 
 # Turn 2: minimal implementation → GREEN evidence
-worker_turn "$ID" "Read .agent/state/current.md FIRST. Criterion $AC has RED evidence in $DIR/evidence/$AC/RED.md. Follow AGENTS.md steps 5-9: smallest implementation change, focused test to GREEN, record GREEN evidence in $DIR/evidence/$AC/GREEN.md (same test ID, command, result, worktree state), then ./hack/test-impact on changed files, ./hack/spec-check $ID, ./hack/verify. STOP after this criterion. $STANDING_RULES" \
+worker_turn "$ID" "Read .agent/state/current.md FIRST. Criterion $AC has RED evidence in $DIR/evidence/$AC/RED.md. Follow AGENTS.md steps 5-9: smallest implementation change, focused test to GREEN, record GREEN evidence in $DIR/evidence/$AC/GREEN.md (same test ID, command, result, worktree state), then ./hack/test-impact on changed files, ./hack/spec-check $ID, ./hack/verify. Write your engineering explanation to artifacts/review/explanation.md (What changed / Why this implementation / Alternatives rejected / Which tests prove it / What could regress / Rollback). STOP after this criterion. $STANDING_RULES" \
   || retry_write_now "$ID" "implementation ($AC)"
 
 # Local gate
