@@ -35,6 +35,13 @@ retry_write_now() {  # <spec-id> <what>  — recovery for read-only/empty turns
   worker_turn "$id" "Your previous turn ended without writing anything. WRITE NOW: continue the $what work for the active criterion in specs/$id/ per .agent/state/current.md. Start with the file you must create or edit. $STANDING_RULES"
 }
 
-next_criterion() {  # <spec.md> — first unchecked acceptance criterion
-  grep -m1 '\- \[ \]' "$1" | sed 's/.*\- \[ \] *//'
+next_criterion() {  # <spec-dir> — first AC-NNN in spec.md without GREEN evidence
+  local dir="$1"
+  grep -oE 'AC-[0-9]+' "$dir/spec.md" | sort -u | while read -r ac; do
+    [ -f "$dir/evidence/$ac/GREEN.md" ] || { echo "$ac"; return; }
+  done | head -1
+}
+
+criterion_text() {  # <spec-dir> <AC-ID> — the criterion's full line
+  grep -m1 "$2" "$1/spec.md" | sed 's/^- *//'
 }

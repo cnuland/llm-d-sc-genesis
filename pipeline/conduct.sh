@@ -1,38 +1,41 @@
 #!/usr/bin/env bash
-# The conductor: drives DSV4 worker turns through the state machine for one spec.
-# Usage: pipeline/conduct.sh <spec-id> [criterion-index]
-# Requires: opencode CLI configured with the ds4 provider; jq/python3; the spec approved.
+# The conductor: drives one acceptance criterion through IMPLEMENTING → LOCAL-GREEN
+# → review bundle, per docs/SDD.md and docs/TDD.md.
+# Usage: pipeline/conduct.sh <spec-id> [AC-ID]
 set -euo pipefail
 cd "$(dirname "$0")/.."
-ID="${1:?usage: conduct.sh <spec-id>}"
-SPEC="specs/$ID/spec.md"
-test -f "$SPEC" || { echo "[conduct] no such spec: $SPEC"; exit 1; }
+ID="${1:?usage: conduct.sh <spec-id> [AC-ID]}"
+DIR="specs/$ID"
+test -f "$DIR/spec.md" || { echo "[conduct] no such spec: $DIR/spec.md"; exit 1; }
 source pipeline/lib.sh
+mkdir -p artifacts
 
-log "state=IMPLEMENTING spec=$ID"
-CRIT="$(next_criterion "$SPEC")"
-[ -z "$CRIT" ] && { log "no unchecked acceptance criteria — nothing to do"; exit 0; }
-log "criterion: $CRIT"
+AC="${2:-$(next_criterion "$DIR")}"
+[ -z "$AC" ] && { log "all acceptance criteria have GREEN evidence — nothing to do"; exit 0; }
+CRIT="$(criterion_text "$DIR" "$AC")"
+mkdir -p "$DIR/evidence/$AC"
+log "state=IMPLEMENTING spec=$ID criterion=$AC"
+log "text: $CRIT"
 
-# Turn 1: failing test (TDD evidence)
-worker_turn "$ID" "Read .agent/state/current.md FIRST, then specs/$ID/spec.md and specs/$ID/test-plan.md. Work ONLY criterion: '$CRIT'. WRITE the failing test now per the test plan (prove it fails for the right reason by running it and quoting the failure in .agent/state/current.md). Do NOT implement yet. Update .agent/state/current.md before ending. $STANDING_RULES" \
-  || retry_write_now "$ID" "test"
+# Turn 1: proving test → RED evidence
+worker_turn "$ID" "Read .agent/state/current.md FIRST, then $DIR/spec.md, $DIR/test-plan.md, and the test IDs mapped to $AC in tests/TEST_MATRIX.md. Work ONLY criterion $AC: '$CRIT'. Follow AGENTS.md steps 1-4: select/write the proving test, run it, prove RED for the expected reason, and record RED evidence in $DIR/evidence/$AC/RED.md (test ID, command, worktree state, failure excerpt, why expected). Do NOT implement yet. Update .agent/state/current.md before ending. $STANDING_RULES" \
+  || retry_write_now "$ID" "proving-test ($AC)"
+test -f "$DIR/evidence/$AC/RED.md" || { log "no RED evidence — HUMAN_REQUIRED"; exit 2; }
 
-# Turn 2: minimal implementation to green
-worker_turn "$ID" "Read .agent/state/current.md FIRST. Criterion: '$CRIT'. The failing test exists. Make the SMALLEST implementation change that turns it green. Run ./hack/test-impact on your changed files and run its Required suites, then ./hack/verify. Update .agent/state/current.md. $STANDING_RULES" \
-  || retry_write_now "$ID" "impl"
+# Turn 2: minimal implementation → GREEN evidence
+worker_turn "$ID" "Read .agent/state/current.md FIRST. Criterion $AC has RED evidence in $DIR/evidence/$AC/RED.md. Follow AGENTS.md steps 5-9: smallest implementation change, focused test to GREEN, record GREEN evidence in $DIR/evidence/$AC/GREEN.md (same test ID, command, result, worktree state), then ./hack/test-impact on changed files, ./hack/spec-check $ID, ./hack/verify. STOP after this criterion. $STANDING_RULES" \
+  || retry_write_now "$ID" "implementation ($AC)"
 
 # Local gate
 if ./hack/verify; then
-  log "state=LOCAL-GREEN"
+  log "state=LOCAL-GREEN ($AC)"
 else
-  log "verify RED — returning to IMPLEMENTING (one diagnosed-fix turn)"
-  worker_turn "$ID" "Read .agent/state/current.md FIRST. ./hack/verify is RED. Diagnose with evidence (run it, read the failure), change exactly ONE thing, re-run until green. $STANDING_RULES"
+  log "verify RED — one diagnosed-fix turn"
+  worker_turn "$ID" "Read .agent/state/current.md FIRST. ./hack/verify is RED after $AC. Diagnose with evidence (run it, read the failure), change exactly ONE thing, re-run to green. Never weaken an assertion. $STANDING_RULES"
   ./hack/verify || { log "still RED — HUMAN_REQUIRED"; exit 2; }
 fi
+test -f "$DIR/evidence/$AC/GREEN.md" || { log "verify green but GREEN evidence missing — HUMAN_REQUIRED"; exit 2; }
 
-# Evidence bundle for the reviewer (Fable). The conductor stops here;
-# the maintainer runs the Fable review out-of-band and drops verdict.json in place,
-# then runs: ./hack/publish-reviewed <spec-id> artifacts/review/commit-msg.txt
 pipeline/review-bundle.sh "$ID"
-log "state=AWAITING-FABLE-REVIEW  bundle: artifacts/review/"
+log "state=AWAITING-INDEPENDENT-REVIEW  bundle: artifacts/review/  ($AC)"
+log "next: reviewer writes artifacts/review/verdict.json, then ./hack/publish-reviewed $ID <msg-file>"
