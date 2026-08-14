@@ -16,7 +16,7 @@ PY
 ./hack/verify
 BR="agent/$ID"
 git checkout -B "$BR" 2>/dev/null || git checkout "$BR"
-git add -A ':!artifacts'
+git add -A   # artifacts/ excluded via .gitignore
 git commit -F "$MSG"
 git push -u origin "$BR"
 echo "[publish] pushed $(git rev-parse --short HEAD) to $BR"
