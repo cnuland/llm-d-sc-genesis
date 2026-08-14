@@ -8,7 +8,8 @@ and evidence infrastructure that the implementation will be built inside. The cl
 service itself lands later, driven by spec/TDD artifacts placed under `specs/`.
 
 > **Slow and Steady Wins the Race.**
-> Do not automate autonomy. Automate evidence.
+> Christopher Nuland's Agentic Golden Rule:
+Do not automate autonomy. Automate evidence.
 
 ## Model roles (adversarial by design)
 
