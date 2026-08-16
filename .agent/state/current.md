@@ -1,49 +1,71 @@
 # Working memory (rewrite aggressively; this is not history)
 
 Spec: 0.1-mvp
-Current acceptance criterion: AC-005 model/tokenizer load once per active
-  revision.
-Slice completed this turn: U-021 GREEN implemented and proven. Suites run.
-  Evidence recorded. STOP after this criterion.
+Current acceptance criterion: AC-006 cache hit bypasses tokenizer/model forward.
+Slice completed this turn: resolved the reviewer's blocking CHANGES verdict on
+AC-006 — `CacheKey` is now a versioned fingerprint (design.md); U-042/U-043/U-044
+RED-first and GREEN; U-040 stays green; AC-006 GREEN.md updated to cover all four.
+STOP after this criterion.
 
-## U-021 — GREEN (this turn)
+## AC-006 — GREEN (this turn, reviewer CHANGES resolved)
 
 ### What landed
-- `src/runtime.rs`: implemented load-once-per-active-revision caching in
-  `load_tokenizer_once`. `Runtime` now holds `resident_tokenizer:
-  Option<Tokenizer>` and `active_revision: Option<String>`. When the requested
-  revision matches the stored active revision, the resident tokenizer is reused
-  (no reload, no count increment); only when the active revision changes does it
-  reload the tokenizer and increment `tokenizer_load_count` by one.
-- Replaced the RED stub (which reloaded on every call).
+- `src/cache.rs`: `CacheKey(String)` (raw prompt as entire key — the reviewer's
+  blocking finding, a design.md violation) replaced by a versioned fingerprint
+  struct `{ classifier_id, model_revision, tokenizer_revision,
+  taxonomy_revision, normalized_text_hash }`, built via
+  `CacheKey::new(classifier_id, model_revision, tokenizer_revision,
+  taxonomy_revision, normalized_text)`. `normalized_text` hashed via
+  `std DefaultHasher`; raw prompt never retained as key identity (also removes
+  the privacy smell). Hand-implemented `PartialEq`/`Eq`/`Hash` fold EVERY
+  revision + the normalized-text hash into key identity, so identical text under
+  a different revision -> different key -> miss (never stale cached result).
+- `ExactCache::classify` bypass logic (U-040) unchanged and still green.
+- New tests U-042/U-043/U-044 (key changes with model/classifier, tokenizer,
+  taxonomy/prototype revision respectively), RED-first then GREEN.
+- Recorded `specs/0.1-mvp/evidence/AC-006/RED-U-042.md` / `-U-043.md` /
+  `-U-044.md` (RED) and `GREEN-U-042.md` / `-U-043.md` / `-U-044.md` (GREEN);
+  updated criterion `GREEN.md` to cover all four.
+- Updated `artifacts/review/explanation.md` (What changed / Why / Alternatives /
+  Tests / Regressions / Rollback).
+
+### RED proof (U-042/U-043/U-044)
+RED state: struct carried all five fields but `PartialEq`/`Hash` considered ONLY
+the normalized-text hash (the design violation). Each test asserted a revision
+change must produce a different key -> `assert_ne!` FAILED (keys equal, same text
+hash). Each failure excerpt recorded. U-040 stayed green at RED state.
 
 ### GREEN proof
-`cargo test --locked u021` -> `u021_model_tokenizer_load_once_per_active_revision`
-PASSED: `left == right` now holds; load count == 1 for ten same-revision calls.
+```
+cargo test --locked u040 -> 1 passed
+cargo test --locked u042 -> 1 passed
+cargo test --locked u043 -> 1 passed
+cargo test --locked u044 -> 1 passed
+```
+U-040: forward runs exactly ONCE (miss only; hit bypasses), hit_count==1, exact
+cached result returned. U-042/U-043/U-044: revision change -> different key ->
+second classify is a MISS (forward_count reaches 2), never a stale cached result.
 
 ## Suites / worktree
-- `./hack/test-impact src/runtime.rs` -> `src/*` unknown surface -> FULL SUITE
+- `./hack/test-impact src/cache.rs` -> `src/*` unknown surface -> FULL SUITE
   required.
 - `./hack/spec-check 0.1-mvp` -> OK.
-- `./hack/verify` -> GREEN (fmt, clippy `-D warnings`, build, full test: 13
-  passed, 4 ignored — ignored tests need fetch-model runtime, unrelated).
-- Worktree: SHA `13cac01` (uncommitted). git status: `M src/runtime.rs`,
-  `?? specs/0.1-mvp/evidence/AC-005/` (RED.md, GREEN-U-021.md, GREEN.md). No
-  commits/pushes.
+- `./hack/verify` -> GREEN: fmt, clippy `-D warnings`, build, full test
+  (17 passed, 4 ignored — ignored require fetch-model runtime, unrelated).
+- Worktree: SHA `df21d9a` (uncommitted). git status:
+  `M src/lib.rs`, `?? src/cache.rs`, `?? specs/0.1-mvp/evidence/AC-006/`.
+  No commits/pushes.
 
 ## Evidence
-- `specs/0.1-mvp/evidence/AC-005/GREEN-U-021.md` (slice evidence: test ID,
-  command, result, worktree state).
-- `specs/0.1-mvp/evidence/AC-005/GREEN.md` (whole-criterion — written because the
-  sole unit-level test U-021 mapped to AC-005 passes).
-- `artifacts/review/explanation.md` (engineering explanation).
+- `specs/0.1-mvp/evidence/AC-006/RED.md` (U-040 RED, prior turn).
+- `specs/0.1-mvp/evidence/AC-006/RED-U-042.md` / `-U-043.md` / `-U-044.md` (this turn).
+- `specs/0.1-mvp/evidence/AC-006/GREEN-U-040.md` (prior turn, still valid).
+- `specs/0.1-mvp/evidence/AC-006/GREEN-U-042.md` / `-U-043.md` / `-U-044.md` (this turn).
+- `specs/0.1-mvp/evidence/AC-006/GREEN.md` (updated this turn to cover all four).
+- `artifacts/review/explanation.md` (updated this turn).
 
 ## Open items / flags for reviewer
-- AC-005's other test I-012 (repeated calls do not reload model/tokenizer in the
-  integration environment) is out of scope for this local unit turn and remains
-  open for the integration environment. Noted in GREEN.md.
-- The resident holder currently holds the tokenizer only; AC-005 says
-  "model/tokenizer". Model residency is not exercised by U-021 and remains for
-  the integration environment.
-- Next criterion: STOP after AC-005 per instruction; no further slices this
-  turn.
+- AC-006's other tests I-030 (warmed result cache hit invokes zero model
+  forwards) and P-001/P-002 (perf cache hit) are integration/perf-environment
+  tests and remain open for those environments.
+- Per instruction: STOP after this criterion.
