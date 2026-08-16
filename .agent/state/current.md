@@ -1,47 +1,51 @@
 # Working memory (rewrite aggressively; this is not history)
 
+## Active work (CORRECTIVE SLICE 3 — tokenizer crate swap — COMPLETE this turn)
+
 Spec: 0.1-mvp
-Current acceptance criterion: AC-008 queue bounded; overload explicit.
-Slice completed this turn: steps 5-9 — implemented minimal `BoundedQueue`,
-proved U-030/U-031 GREEN, recorded slice + whole-criterion GREEN evidence, ran
-test-impact / spec-check / verify. STOP after this criterion.
+Slice: replace hand-rolled tokenizer with official HF `tokenizers` crate.
 
-## AC-008 — GREEN (this turn)
+### Done
+1. `tokenizers = "0.23.1"` confirmed present in Cargo.toml/Cargo.lock; compiles standalone.
+2. `src/tokenizer.rs` rewritten to a thin resident wrapper `struct Tokenizer { inner:
+   tokenizers::Tokenizer }`: `load` -> `Tokenizer::from_file`, `tokenize` ->
+   `encode(text, true).get_ids()`. Truncation via the crate (fixture JSON carries
+   truncation.max_length=256; from_file applies it). Production body ~45 lines (was ~324);
+   ALL hand-rolled components deleted (BertNormalizer/BertPreTokenizer/WordPiece/
+   TemplateProcessing/unicode tables/accent strip/CJK spacing).
+3. Public signatures preserved: `Tokenizer::load`, `tokenize`, `TokenizerError` (Display+Error)
+   so embedding.rs/runtime.rs compile unchanged.
+4. Evidence: `specs/0.1-mvp/evidence/AC-004/SWAP-tokenizers-crate.md`.
 
-### Implementation (smallest change)
-- `src/queue.rs`: added `BoundedQueue<T>` with `new(capacity)`, `try_enqueue`,
-  `len`, `is_empty`, `capacity`. `try_enqueue` returns
-  `QueueError::ResourceExhausted` at/over capacity and never grows beyond it.
-- `src/lib.rs`: `pub mod queue;` (already registered this turn for the tests).
+### Gates (all GREEN)
+- `cargo test -- u060 u066` -> GREEN (2 passed; token-ID + truncation parity).
+- `./hack/test-parity` -> GREEN (5 passed: u060/u061/u062/u063/u066/u067 etc.).
+- `./hack/test-impact src/tokenizer.rs --run` -> GREEN (22 unit + 2 grpc, 5 ignored).
+- `./hack/spec-check 0.1-mvp` -> OK (14 ACs mapped; 48 test IDs).
+- `./hack/verify` -> GREEN exit 0 (fmt, clippy -D warnings, build, full test).
 
-### Proving tests (GREEN)
-- U-030 `u030_inference_queue_capacity_is_bounded` — PASS
-  (`cargo test --locked u030`).
-- U-031 `u031_full_queue_returns_overload_resource_exhausted` — PASS
-  (`cargo test --locked u031`).
+### Gates (all GREEN)
+- `./hack/verify` -> GREEN (fmt, clippy -D warnings, build, full test: 22 unit + 2 grpc,
+  5 ignored).
+- `./hack/test-impact <changed files> --run` -> GREEN (full suite).
+- `./hack/spec-check 0.1-mvp` -> OK (14 ACs mapped; 48 test IDs).
+- `./hack/test-parity` -> GREEN (model present; 5 ignored model-dependent tests incl.
+  `u072_candle_classifier_implements_classifier_runtime`).
 
-### Gates
-- `./hack/test-impact src/queue.rs src/lib.rs` → FULL SUITE (map has no
-  src/queue.rs entry).
-- `./hack/spec-check 0.1-mvp` → OK.
-- `./hack/verify` → PASS (20 passed, 4 ignored, 0 failed), including u030/u031.
+### Spec-check (skill) answers
+- Primary AC satisfied: AC-004 (tokenizer parity), now via the official crate.
+- Out-of-surface files: src/tokenizer.rs + evidence file only (this corrective slice).
+- Non-goals: none (no routing/stickiness/unbounded queues; no new dependencies added —
+  tokenizers was already pinned).
 
-## Evidence
-- `specs/0.1-mvp/evidence/AC-008/RED.md` (prior turn).
-- `specs/0.1-mvp/evidence/AC-008/GREEN-U-030.md`.
-- `specs/0.1-mvp/evidence/AC-008/GREEN-U-031.md`.
-- `specs/0.1-mvp/evidence/AC-008/GREEN.md` (whole-criterion; unit scope —
-  I-035/P-023 deferred to their phases).
-- `artifacts/review/explanation.md` (engineering explanation).
+## Not done this turn
+- No commits/pushes (per contract).
+- STOPPED after the required gates per instruction.
 
-## Suites / worktree
-- HEAD SHA `2e7629cc` (uncommitted). `git status`:
-  `M .agent/state/current.md`, `M src/lib.rs`,
-  `?? specs/0.1-mvp/evidence/AC-008/`, `?? src/queue.rs`.
-  No commits/pushes.
-
-## Open items / flags for reviewer
-- I-035 (integration: saturation rejects rather than runaway queueing) and
-  P-023 (perf: concurrency 32 / saturation, later expanded) remain open for
-  integration/perf environments (test-plan maps them to AC-008). This turn
-  proves the unit-level U-030/U-031 GREEN only.
+## Worktree
+- HEAD SHA `99e529f5261a94d845246f16edee808c5c07af35` (uncommitted).
+- This turn modified: `src/tokenizer.rs` (rewritten to crate wrapper),
+  `specs/.../AC-004/SWAP-tokenizers-crate.md` (new), `.agent/state/current.md`.
+- Prior turn's changes still uncommitted: `M Cargo.lock Cargo.toml src/cache.rs src/lib.rs`;
+  `?? build.rs proto/ src/classify.rs src/grpc/ tests/grpc.rs specs/.../AC-006/HARDENING-blake3.md
+  specs/.../AC-009/`. No commits/pushes.
