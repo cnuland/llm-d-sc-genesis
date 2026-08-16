@@ -1,56 +1,55 @@
 # Working memory (rewrite aggressively; this is not history)
 
-## Active work (AC-009 — dummy Praxis semantics — GREEN this turn)
+## Active work (AC-010 — response contains signals, not final route — GREEN)
 
 Spec: 0.1-mvp
-Active criterion: AC-009 "dummy Praxis consumes response over persistent gRPC."
-Slice this turn: I-005/I-006 (dummy-Praxis semantics), steps 5-9 of AGENTS.md.
-Implemented, GREEN, LOCAL-GREEN written. STOPPING after this criterion.
+Active criterion: AC-010 "response contains signals, not final route."
+Tests mapped: `specs/0.1-mvp/test-plan.md` -> U-010, I-007.
+Status: LOCAL-GREEN complete this turn (TDD RED->GREEN executed directly).
 
-### Prior AC-009 slices (committed)
-- I-001 `i001_real_tonic_round_trip` + I-002 `i002_persistent_http2_channel_reused`
-  (gRPC layer: `src/grpc/classify.rs`, tonic blocking client/server). I-002 asserts
-  I-008 (multi-turn requests do not reconnect per call) via
-  `channel_reconnect_count()==0`.
+## Escalation resolved
+The AC-010 contradiction (field kept-but-never-set vs removed) was adjudicated in
+my favor by the reviewer via `docs/decisions/0001-no-route-field-in-response.md`:
+interpretation (B) is authoritative — the route field is REMOVED from the schema
+entirely; U-010 is a SCHEMA invariant. The reviewer also recorded a review miss
+(AC-009 passed with the field present).
 
-### This slice (GREEN)
-- Added `src/dummy_praxis.rs` (smallest change):
-  - `DummyRequest { request_id, session_id, context, signals, deadline }`.
-  - `DummyPraxis::connect` reuses the persistent `ClassifyClient`.
-  - `DummyPraxis::classify_and_route` propagates session metadata verbatim,
-    consumes the top ranked signal, applies fixed test-only mapping
-    (`NEVER_EGRESS_SIGNAL "proto-a" -> "local-model"`, otherwise ->
-    `"general-model"`), records route + classifier RTT in `DummyOutcome`.
-  - Routing authority stays outside llm-d-sc (AC-010).
-- Wired `pub mod dummy_praxis;` in `src/lib.rs`.
+## This turn (TDD order, worked directly, no subagents)
+1. RED: wrote `tests/schema.rs` U-010 (deterministic plain `#[test]`, reads
+   `proto/classify.proto`, parses `ClassifyResponse` field declarations, asserts
+   no final_route/route/endpoint/target field). Ran `cargo test --test schema
+   --locked` -> RED for the right reason (field exists). Recorded
+   `specs/0.1-mvp/evidence/AC-010/RED-U010.md`.
+2. Removed `optional string final_route = 3;` from `ClassifyResponse` in
+   `proto/classify.proto`.
+3. Privileged existing-test change (authorized by ADR-0001): replaced
+   `response.final_route.is_none()` in `tests/grpc.rs` i001 with the U-010 schema
+   invariant (no field to reference).
+4. Added `tests/grpc.rs` I-007 `i007_response_cannot_dictate_endpoint`: dummy
+   Praxis receives a response; the ONLY route in the system is the one it
+   computes itself; asserts the response type offers no route to consume.
+5. GREEN: `cargo test --test schema --locked` 2/2; `cargo test --test grpc
+   --locked` 5/5. Recorded GREEN-U010.md, GREEN-I007.md, LOCAL-GREEN.md.
 
-### GREEN evidence (recorded)
-- Command: `cargo test --locked --test grpc i005`, `... i006` -> both PASS.
-- Full `cargo test --locked --test grpc`: 4 passed; 0 failed (I-001/I-002/I-005/I-006).
-- `./hack/test-all`: 22 passed; 0 failed; 5 ignored (Candle, run with `--ignored`
-  after fetch-model); grpc 4/4.
-- `./hack/test-impact` on changed files: reports UNKNOWN SURFACE -> FULL SUITE;
-  full suite run GREEN.
-- `./hack/spec-check 0.1-mvp`: OK; AC-009 now LOCAL-GREEN.
-- `./hack/verify`: GREEN (fmt, clippy -D warnings, build, workspace tests).
-- Evidence file: `specs/0.1-mvp/evidence/AC-009/GREEN-I005-I006.md`;
-  whole-criterion `LOCAL-GREEN.md` written (S-001/S-002 OpenShift system tier
-  deferred; PROMOTION-GREEN is never worker-written).
-- HEAD SHA `83063564edd0eddade63d7de7b399c7015fe8ee8`, working tree uncommitted.
+## Required suites (all green)
+- `./hack/test-impact`: Required tests/grpc; Recommended cargo test (unit) — both pass.
+- `./hack/spec-check 0.1-mvp`: OK (AC-010 LOCAL-GREEN).
+- `./hack/verify`: PASSED (22 unit + 5 grpc + 2 schema + 0 doc, 5 ignored Candle).
+- `cargo test --test grpc --locked`: 5/5 green.
 
-### Next step
-STOP after this criterion per instructions. Later AC-009 phases: S-001/S-002
-(OpenShift system tier) — not run by the worker; required for PROMOTION-GREEN only.
-
-## Not done this turn
-- No commits/pushes (per contract).
-- No subagents spawned (worked directly).
-- S-001/S-002 (OpenShift system) remain for later AC-009 phases.
+## Files changed this turn (uncommitted, no commit/push)
+- `proto/classify.proto` (removed final_route field)
+- `src/grpc/classify.rs` (removed final_route: None in response build)
+- `tests/grpc.rs` (i001 assertion replaced by schema invariant; added i007)
+- `tests/schema.rs` (new U-010 + generated-type surface tests)
+- `specs/0.1-mvp/evidence/AC-010/{RED-U010,GREEN-U010,GREEN-I007,LOCAL-GREEN}.md`
+- `.agent/state/current.md`
 
 ## Worktree
-- HEAD SHA `83063564edd0eddade63d7de7b399c7015fe8ee8`.
-- Changed this turn: `src/dummy_praxis.rs` (new), `src/lib.rs`,
-  `tests/grpc.rs` (fmt), `specs/.../AC-009/GREEN-I005-I006.md` (new),
-  `specs/.../AC-009/LOCAL-GREEN.md` (new), `specs/.../AC-009/RED.md`,
-  `artifacts/review/explanation.md` (new), `.agent/state/current.md`.
-- No commits/pushes.
+- HEAD SHA `e6361b73c4865d14fee6147a218463d9ec30099f`, working tree has the above
+  changes plus pre-existing untracked ADR (`docs/decisions/`) and `tests/TEST_MATRIX.md`.
+- No commits/pushes (worker never commits).
+
+## Next step
+Stop per AGENTS.md step 10. AC-010 is locally green and ready for review
+(review-prep skill is available for the evidence bundle if requested).
