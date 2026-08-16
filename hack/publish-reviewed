@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 # The deterministic publisher. The ONLY path to git commit/push for agent work.
-# Refuses to run without a PASS verdict newer than the working-tree changes.
+# Refuses to run unless the reviewer's PASS verdict is bound (by sha256) to the
+# EXACT diff being published — chain of custody, not just verdict existence.
 # Usage: ./hack/publish-reviewed <spec-id> <commit-message-file>
 set -euo pipefail
 cd "$(dirname "$0")/.."
@@ -12,11 +13,19 @@ python3 - "$VERDICT" <<'PY'
 import json,sys
 v=json.load(open(sys.argv[1]))
 assert v.get("decision")=="PASS", f"[publish] FAIL: reviewer decision is {v.get('decision')!r}, not PASS"
+assert v.get("diff_sha256"), "[publish] FAIL: verdict is not diff-bound (missing diff_sha256)"
 PY
+# recompute the CURRENT tree's diff hash exactly as review-bundle does
+git add -N -A 2>/dev/null || true
+git diff HEAD > artifacts/publish-diff.patch
+git reset -q 2>/dev/null || true
+CUR=$(shasum -a 256 artifacts/publish-diff.patch | awk '{print $1}')
+REV=$(python3 -c "import json;print(json.load(open('$VERDICT'))['diff_sha256'])")
+[ "$CUR" = "$REV" ] || { echo "[publish] FAIL: tree changed since review (reviewed $REV, current $CUR) — re-review required"; exit 1; }
 ./hack/verify
 BR="agent/$ID"
 git checkout -B "$BR" 2>/dev/null || git checkout "$BR"
 git add -A   # artifacts/ excluded via .gitignore
 git commit -F "$MSG"
 git push -u origin "$BR"
-echo "[publish] pushed $(git rev-parse --short HEAD) to $BR"
+echo "[publish] pushed $(git rev-parse --short HEAD) to $BR (verdict-bound diff $CUR)"

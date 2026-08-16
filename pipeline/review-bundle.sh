@@ -11,6 +11,7 @@ git add -N -A ':!artifacts' 2>/dev/null || true
 git diff HEAD > "$OUT/diff.patch"
 git diff --name-only HEAD > "$OUT/changed-files.txt"
 git reset -q 2>/dev/null || true
+shasum -a 256 "$OUT/diff.patch" | awk '{print $1}' > "$OUT/diff.sha256"
 ./hack/test-impact $(cat "$OUT/changed-files.txt" | tr '\n' ' ') > "$OUT/test-impact.txt" 2>&1 || true
 ./hack/verify > "$OUT/verify-output.txt" 2>&1 && echo GREEN > "$OUT/verify-status.txt" || echo RED > "$OUT/verify-status.txt"
 cp "specs/$ID/spec.md" "$OUT/spec.md"

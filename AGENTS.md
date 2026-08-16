@@ -51,6 +51,11 @@ Read the active specification and test plan before editing implementation code.
   `.agent/state/current.md`, and end the turn. Do not silently reinterpret intent.
 - Rust: respect pinned versions; no new dependencies without a design note; never edit
   generated protobuf code by hand.
+- NEVER reimplement a mature dependency the architecture/research has already selected
+  (e.g. the HF `tokenizers` crate, moka, tonic). If a task appears to require doing so,
+  STOP and escalate before writing it. Parity with a fixture does not justify a clone.
+- Crate research: use Bash (grep/sed) on ~/.cargo/registry sources — the Read tool is
+  blocked outside the project and will kill your turn.
 
 ## Source of truth (in order)
 

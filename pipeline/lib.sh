@@ -38,7 +38,7 @@ retry_write_now() {  # <spec-id> <what>  — recovery for read-only/empty turns
 next_criterion() {  # <spec-dir> — first AC-NNN in spec.md without GREEN evidence
   local dir="$1"
   grep -oE 'AC-[0-9]+' "$dir/spec.md" | sort -u | while read -r ac; do
-    [ -f "$dir/evidence/$ac/GREEN.md" ] || { echo "$ac"; return; }
+    [ -f "$dir/evidence/$ac/LOCAL-GREEN.md" ] || { echo "$ac"; return; }
   done | head -1
 }
 

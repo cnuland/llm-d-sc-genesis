@@ -23,7 +23,7 @@ worker_turn "$ID" "Read .agent/state/current.md FIRST, then $DIR/spec.md, $DIR/t
 test -f "$DIR/evidence/$AC/RED.md" || { log "no RED evidence — HUMAN_REQUIRED"; exit 2; }
 
 # Turn 2: minimal implementation → GREEN evidence
-worker_turn "$ID" "Read .agent/state/current.md FIRST. Criterion $AC has RED evidence in $DIR/evidence/$AC/RED.md. Follow AGENTS.md steps 5-9: smallest implementation change, focused test to GREEN, record slice evidence in $DIR/evidence/$AC/GREEN-<TESTID>.md (same test ID, command, result, worktree state); write the whole-criterion GREEN.md ONLY when EVERY unit-level test mapped to this criterion in test-plan.md passes, then ./hack/test-impact on changed files, ./hack/spec-check $ID, ./hack/verify. Write your engineering explanation to artifacts/review/explanation.md (What changed / Why this implementation / Alternatives rejected / Which tests prove it / What could regress / Rollback). STOP after this criterion. $STANDING_RULES" \
+worker_turn "$ID" "Read .agent/state/current.md FIRST. Criterion $AC has RED evidence in $DIR/evidence/$AC/RED.md. Follow AGENTS.md steps 5-9: smallest implementation change, focused test to GREEN, record slice evidence in $DIR/evidence/$AC/GREEN-<TESTID>.md (same test ID, command, result, worktree state); write the whole-criterion LOCAL-GREEN.md ONLY when EVERY unit-level test mapped to this criterion in test-plan.md passes (PROMOTION-GREEN.md is reserved for when integration/system/perf tiers also pass and is never written by the worker), then ./hack/test-impact on changed files, ./hack/spec-check $ID, ./hack/verify. Write your engineering explanation to artifacts/review/explanation.md (What changed / Why this implementation / Alternatives rejected / Which tests prove it / What could regress / Rollback). STOP after this criterion. $STANDING_RULES" \
   || retry_write_now "$ID" "implementation ($AC)"
 
 # Local gate
@@ -34,7 +34,7 @@ else
   worker_turn "$ID" "Read .agent/state/current.md FIRST. ./hack/verify is RED after $AC. Diagnose with evidence (run it, read the failure), change exactly ONE thing, re-run to green. Never weaken an assertion. $STANDING_RULES"
   ./hack/verify || { log "still RED — HUMAN_REQUIRED"; exit 2; }
 fi
-test -f "$DIR/evidence/$AC/GREEN.md" || { log "verify green but GREEN evidence missing — HUMAN_REQUIRED"; exit 2; }
+test -f "$DIR/evidence/$AC/LOCAL-GREEN.md" || { log "verify green but LOCAL-GREEN evidence missing — HUMAN_REQUIRED"; exit 2; }
 
 pipeline/review-bundle.sh "$ID"
 log "state=AWAITING-INDEPENDENT-REVIEW  bundle: artifacts/review/  ($AC)"
