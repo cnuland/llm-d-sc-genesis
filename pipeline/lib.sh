@@ -10,9 +10,28 @@ STANDING_RULES="IMPORTANT: do NOT spawn subagents - work DIRECTLY. Scratch files
 
 log() { echo "[conduct $(date +%H:%M:%S)] $*"; }
 
+METRICS_URL="${METRICS_URL:-https://llama-server-ds4-homelab-maas.apps.ironman.cjlabs.dev/metrics}"
+
+# Real liveness: tokens actually produced since the last poll. A wedged
+# generation leaves is_processing=true forever (observed 2026-08-16: slot
+# held 34k tokens of zombie context while producing nothing), so claimed
+# state is NOT a liveness signal — token progress is.
+tokens_predicted() {
+  curl -sk -m 15 -H "Authorization: Bearer $(cat "$API_KEY_FILE")" "$METRICS_URL" 2>/dev/null \
+    | grep '^llamacpp:tokens_predicted_total' | awk '{print int($2)}'
+}
+
+# State lives in a file: server_busy is called via $(...) which runs in a
+# SUBSHELL, so a shell variable would never persist between polls.
+TOKEN_STATE="${TOKEN_STATE:-artifacts/.watchdog-tokens}"
+
 server_busy() {
-  curl -sk -m 15 -H "Authorization: Bearer $(cat "$API_KEY_FILE")" "$SLOTS_URL" 2>/dev/null \
-    | python3 -c 'import json,sys; print(any(x.get("is_processing") for x in json.load(sys.stdin)))' 2>/dev/null
+  local now prev
+  now=$(tokens_predicted)
+  prev=$(cat "$TOKEN_STATE" 2>/dev/null || echo 0)
+  if [ -z "$now" ]; then echo True; return; fi   # metrics unreachable: do not kill on a probe failure
+  echo "$now" > "$TOKEN_STATE"
+  [ "$now" -gt "$prev" ] && echo True || echo False
 }
 
 worker_turn() {  # <spec-id> <prompt>  — returns 1 on watchdog kill
