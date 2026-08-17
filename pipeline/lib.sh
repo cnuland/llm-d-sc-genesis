@@ -5,7 +5,7 @@
 WORKER_MODEL="${WORKER_MODEL:-ds4/ds4-flash-0731}"
 SLOTS_URL="${SLOTS_URL:-https://llama-server-ds4-homelab-maas.apps.ironman.cjlabs.dev/slots}"
 API_KEY_FILE="${API_KEY_FILE:-$HOME/.ds4_api_key}"   # durable path — never /tmp
-IDLE_LIMIT="${IDLE_LIMIT:-8}"                        # x90s ≈ 12 min server-idle → kill
+IDLE_LIMIT="${IDLE_LIMIT:-20}"                       # x90s = 30 min with NO signal of life → kill
 STANDING_RULES="IMPORTANT: do NOT spawn subagents - work DIRECTLY. Scratch files in ./artifacts/ only, never /tmp. RELATIVE paths only. Never commit or push."
 
 log() { echo "[conduct $(date +%H:%M:%S)] $*"; }
@@ -43,6 +43,10 @@ server_busy() {
   lprev=$(cat "$LOG_STATE" 2>/dev/null || echo 0)
   echo "$lnow" > "$LOG_STATE"
   [ "$lnow" -gt "$lprev" ] && alive=True
+  # third signal: the worker edited a file in the last 3 minutes. opencode's
+  # stdout is block-buffered when redirected, so log growth can pause for long
+  # stretches during real work; file writes are unbuffered evidence of progress.
+  if [ -n "$(find src tests specs proto hack -type f -mmin -3 2>/dev/null | head -1)" ]; then alive=True; fi
   echo "$alive"
 }
 
