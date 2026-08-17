@@ -1,55 +1,68 @@
 # Working memory (rewrite aggressively; this is not history)
 
-## Active work (AC-010 — response contains signals, not final route — GREEN)
+## Active work (AC-011 — OpenShift sidecar/ClusterIP RTT distributions captured — GREEN)
 
 Spec: 0.1-mvp
-Active criterion: AC-010 "response contains signals, not final route."
-Tests mapped: `specs/0.1-mvp/test-plan.md` -> U-010, I-007.
-Status: LOCAL-GREEN complete this turn (TDD RED->GREEN executed directly).
+Active criterion: AC-011 "OpenShift sidecar/ClusterIP RTT distributions captured."
+Tests mapped: `specs/0.1-mvp/test-plan.md` -> P-030..P-033, S-001/S-002.
+Status: LOCAL-GREEN this turn (TDD RED->GREEN executed directly, no subagents).
 
-## Escalation resolved
-The AC-010 contradiction (field kept-but-never-set vs removed) was adjudicated in
-my favor by the reviewer via `docs/decisions/0001-no-route-field-in-response.md`:
-interpretation (B) is authoritative — the route field is REMOVED from the schema
-entirely; U-010 is a SCHEMA invariant. The reviewer also recorded a review miss
-(AC-009 passed with the field present).
+## This turn (worked directly, no subagents)
 
-## This turn (TDD order, worked directly, no subagents)
-1. RED: wrote `tests/schema.rs` U-010 (deterministic plain `#[test]`, reads
-   `proto/classify.proto`, parses `ClassifyResponse` field declarations, asserts
-   no final_route/route/endpoint/target field). Ran `cargo test --test schema
-   --locked` -> RED for the right reason (field exists). Recorded
-   `specs/0.1-mvp/evidence/AC-010/RED-U010.md`.
-2. Removed `optional string final_route = 3;` from `ClassifyResponse` in
-   `proto/classify.proto`.
-3. Privileged existing-test change (authorized by ADR-0001): replaced
-   `response.final_route.is_none()` in `tests/grpc.rs` i001 with the U-010 schema
-   invariant (no field to reference).
-4. Added `tests/grpc.rs` I-007 `i007_response_cannot_dictate_endpoint`: dummy
-   Praxis receives a response; the ONLY route in the system is the one it
-   computes itself; asserts the response type offers no route to consume.
-5. GREEN: `cargo test --test schema --locked` 2/2; `cargo test --test grpc
-   --locked` 5/5. Recorded GREEN-U010.md, GREEN-I007.md, LOCAL-GREEN.md.
+Selected the local deterministic mechanics proving tests for AC-011: P-030
+(sidecar cache-hit RTT distribution), P-031 (sidecar cache-miss), P-032
+(ClusterIP cache-hit), P-033 (ClusterIP cache-miss) — all in `tests/bench_rtt.rs`.
+S-001/S-002 (OpenShift cluster E2E) deferred to the deployment phase (same
+pattern as AC-009).
 
-## Required suites (all green)
-- `./hack/test-impact`: Required tests/grpc; Recommended cargo test (unit) — both pass.
-- `./hack/spec-check 0.1-mvp`: OK (AC-010 LOCAL-GREEN).
-- `./hack/verify`: PASSED (22 unit + 5 grpc + 2 schema + 0 doc, 5 ignored Candle).
-- `cargo test --test grpc --locked`: 5/5 green.
+1. RED was proven last turn: the crate had no RTT distribution capture — only a
+   single scalar `DummyOutcome.rtt`; `llm_d_sc::bench` was undefined, so
+   `cargo test --locked --test bench_rtt` failed E0432/E0433 at exit 101.
+   Recorded in `specs/0.1-mvp/evidence/AC-011/RED.md`.
+2. Implemented the smallest change: added the RTT-distribution benchmark harness.
+3. GREEN: `cargo test --locked --test bench_rtt` -> all 4 pass (P-030..P-033).
+   Recorded `specs/0.1-mvp/evidence/AC-011/GREEN.md`.
+4. `./hack/test-impact src/bench.rs src/lib.rs tests/bench_rtt.rs` -> UNKNOWN
+   SURFACE -> ran `./hack/test-all`: all suites green (23+4+5+2 passed, 5 ignored
+   Candle tests requiring `./hack/fetch-model`).
+5. `./hack/spec-check 0.1-mvp` -> OK; AC-011 now LOCAL-GREEN (was open).
+6. `./hack/verify` -> exit 0 (all suites + fmt-check pass).
 
-## Files changed this turn (uncommitted, no commit/push)
-- `proto/classify.proto` (removed final_route field)
-- `src/grpc/classify.rs` (removed final_route: None in response build)
-- `tests/grpc.rs` (i001 assertion replaced by schema invariant; added i007)
-- `tests/schema.rs` (new U-010 + generated-type surface tests)
-- `specs/0.1-mvp/evidence/AC-010/{RED-U010,GREEN-U010,GREEN-I007,LOCAL-GREEN}.md`
+## Implementation (smallest change, no unrelated refactors)
+
+- `src/bench.rs` (new): `BenchmarkRun` / `Topology` (Sidecar/ClusterIp) /
+  `CacheMode` (Hit/Miss) / `RttDistribution` (p50/p90/p95/p99/max via
+  nearest-rank percentile over sorted per-request RTT samples). Drives the dummy
+  Praxis over the persistent gRPC channel (I-008), never a route (AC-010).
+  `CacheMode::Hit` reuses one fixed context (exact-result cache hit);
+  `CacheMode::Miss` sends a unique context per request (cache miss).
+  `BenchmarkRun` methods take `&self` (praxis behind a `Mutex`) so the recorded
+  immutable `let run` test signature compiles unchanged.
+- `src/lib.rs`: added `pub mod bench;`.
+
+## Why the tests are non-vacuous
+Each scenario asserts a real percentile distribution (p50 <= p90 <= p95 <= p99
+<= max, strictly positive p50). A mean-only harness cannot satisfy the tests
+(AGENTS.md hard rule: no average-only latency claims).
+
+## Files changed (uncommitted, no commit/push)
+- `tests/bench_rtt.rs` (new, untracked): P-030..P-033 proving tests
+- `src/bench.rs` (new, untracked)
+- `src/lib.rs` (modified): `pub mod bench;`
+- `specs/0.1-mvp/evidence/AC-011/RED.md`, `GREEN.md` (new)
 - `.agent/state/current.md`
 
 ## Worktree
-- HEAD SHA `e6361b73c4865d14fee6147a218463d9ec30099f`, working tree has the above
-  changes plus pre-existing untracked ADR (`docs/decisions/`) and `tests/TEST_MATRIX.md`.
-- No commits/pushes (worker never commits).
+- HEAD SHA `d3b467cb952818c455f20ba372b2257b868bd08a`, no commits/pushes (worker
+  never commits). `git status`: `M .agent/state/current.md`, `M src/lib.rs`,
+  `?? specs/0.1-mvp/evidence/AC-011/`, `?? src/bench.rs`, `?? tests/bench_rtt.rs`.
 
 ## Next step
-Stop per AGENTS.md step 10. AC-010 is locally green and ready for review
-(review-prep skill is available for the evidence bundle if requested).
+Stop per AGENTS.md step 10. AC-011 LOCAL-GREEN complete for the deterministic
+slice (P-030..P-033). Remaining for AC-011: S-001/S-002 (OpenShift cluster E2E,
+deployment phase). When directed, proceed to the next open criterion.
+
+## Open question for maintainer
+The `bench` harness API referenced by the proving tests (BenchmarkRun/Topology/
+CacheMode/RttDistribution) is my proposed surface. If the maintainer prefers a
+different harness shape for AC-011, escalate before extending it to S-001/S-002.
