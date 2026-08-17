@@ -25,13 +25,25 @@ tokens_predicted() {
 # SUBSHELL, so a shell variable would never persist between polls.
 TOKEN_STATE="${TOKEN_STATE:-artifacts/.watchdog-tokens}"
 
+# Liveness = model generating tokens OR the client emitting output.
+# Token-only is blind to legitimate long tool calls (cargo build/test produce
+# no tokens for minutes); is_processing-only is blind to wedged generations
+# (observed 2026-08-16). Either signal moving means the turn is alive.
+LOG_STATE="${LOG_STATE:-artifacts/.watchdog-logsize}"
+TURN_LOG="${TURN_LOG:-artifacts/conduct-0.1-mvp.log}"
+
 server_busy() {
-  local now prev
+  local now prev lnow lprev alive=False
   now=$(tokens_predicted)
   prev=$(cat "$TOKEN_STATE" 2>/dev/null || echo 0)
-  if [ -z "$now" ]; then echo True; return; fi   # metrics unreachable: do not kill on a probe failure
+  if [ -z "$now" ]; then echo True; return; fi   # probe failure: never kill on it
   echo "$now" > "$TOKEN_STATE"
-  [ "$now" -gt "$prev" ] && echo True || echo False
+  [ "$now" -gt "$prev" ] && alive=True
+  lnow=$(wc -c < "$TURN_LOG" 2>/dev/null || echo 0)
+  lprev=$(cat "$LOG_STATE" 2>/dev/null || echo 0)
+  echo "$lnow" > "$LOG_STATE"
+  [ "$lnow" -gt "$lprev" ] && alive=True
+  echo "$alive"
 }
 
 worker_turn() {  # <spec-id> <prompt>  — returns 1 on watchdog kill
