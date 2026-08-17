@@ -1,54 +1,49 @@
 # Working memory (rewrite aggressively; this is not history)
 
-## Active work (AC-012 — queue/tokenize/forward/total latency visible — LOCAL-GREEN)
-
+## Active work (AC-013) — completed this turn
 Spec: 0.1-mvp
-Active criterion: AC-012 "queue/tokenize/forward/total latency visible."
-Tests mapped: `specs/0.1-mvp/test-plan.md` -> U-080/U-081, I-080, S-080.
-Status: LOCAL-GREEN this turn. U-080/U-081 proven locally; I-080 passes locally
-(integration tier not discharged by this unit LOCAL-GREEN); S-080 deferred to
-deployment phase (OpenShift cluster E2E, same pattern as AC-009/AC-011).
+Active criterion: AC-013 "restart + complete context recomputes correctly."
+Tests mapped: `specs/0.1-mvp/test-plan.md` -> I-045 (integration), S-020
+(OpenShift system). No unit-level tests mapped to AC-013.
 
-## This turn (worked directly, no subagents)
+## This turn (worked directly, no subagents; maintainer directed steps 5-9)
+1. Read state, spec, test-plan, TEST_MATRIX, RED.md, GREEN.md, tests/restart.rs.
+2. Confirmed focused test GREEN on current worktree:
+   `cargo test --locked --test restart` -> I-045 ok (1 passed, 0.12s).
+3. Smallest implementation change: NO `src/` change required — restart +
+   complete-context recompute pre-exists on the deterministic path (RED.md
+   escalation). The added artifact is the proving/regression test
+   `tests/restart.rs` (untracked).
+4. Recorded slice evidence: `evidence/AC-013/GREEN-I045.md` (test ID, command,
+   result, worktree state).
+5. Wrote whole-criterion `evidence/AC-013/LOCAL-GREEN.md` (no unit-level tests
+   mapped; I-045 passes; S-020 deferred to system tier; PROMOTION-GREEN never
+   written by worker).
+6. `./hack/test-impact tests/restart.rs` -> no src surface changed; no required
+   suite; recommended unit suite passed (`cargo test --locked`: 25 lib + all
+   integration suites green).
+7. `./hack/spec-check 0.1-mvp` -> AC-013: LOCAL-GREEN; OK (14 ACs mapped, AC-014
+   open).
+8. `./hack/verify` -> all suites green (25 lib unit + bench + grpc + metrics +
+   restart + schema); 5 Candle model tests ignored pending fetch-model.
+9. Wrote engineering explanation: `artifacts/review/explanation.md`.
 
-Continued AC-012 after the watchdog false-positive fix (watchdog commits landed:
-HEAD now `e27ccd39a938670d9e9c5858151dd3e5b964b573`, on top of RED base
-`06f34218`). RED evidence in `specs/0.1-mvp/evidence/AC-012/RED.md` still valid
-(failure was the missing metrics module, unrelated to the watchdog).
-
-1. Read `tests/metrics.rs` and `.agent/state/current.md` to recover prior turns.
-2. Implemented the smallest change:
-   - `src/metrics.rs` (new): `LatencyStage`, `Metrics`, `MetricsSnapshot`.
-   - `src/classify.rs`: instrumented `ClassifyService` (Queue/Tokenize/Forward/
-     Total stages + cache hit/miss counters); added `with_metrics` and
-     `from_synthetic_fixtures_with_metrics`.
-   - `src/grpc/classify.rs`: `ClassifyServer` holds shared `Metrics`,
-     `metrics_snapshot()` surface.
-   - `src/lib.rs`: `pub mod metrics;`.
-   - Removed `let mut metrics` -> `let metrics` in `tests/metrics.rs` (interior
-     mutability; `unused_mut` fails clippy `-D warnings`). No assertion removed.
-3. Ran `cargo test --locked --test metrics` -> GREEN (3 passed: U-080/U-081/I-080).
-4. Recorded `GREEN-U080.md`, `GREEN-U081.md`, `LOCAL-GREEN.md`.
-5. `./hack/test-impact` -> FULL SUITE (unknown surface `src/metrics.rs`);
-   full workspace suite passes.
-6. `./hack/spec-check 0.1-mvp` -> OK (AC-012 now LOCAL-GREEN).
-7. `./hack/verify` -> exit 0 (fmt, clippy `-D warnings`, build, full tests).
+## Status
+AC-013 is locally green (I-045 GREEN; LOCAL-GREEN.md recorded). S-020 remains
+deferred to the deployment/system tier (PROMOTION-GREEN, never worker-written).
+STOP after this criterion — do NOT start the next criterion.
 
 ## Files changed (uncommitted, no commit/push)
-- `src/metrics.rs` (new)
-- `src/classify.rs`, `src/grpc/classify.rs`, `src/lib.rs` (modified)
-- `tests/metrics.rs` (untracked; `mut` removed on Metrics bindings)
-- `specs/0.1-mvp/evidence/AC-012/` (RED.md, GREEN-U080.md, GREEN-U081.md, LOCAL-GREEN.md)
+- `tests/restart.rs` (new, untracked)
+- `specs/0.1-mvp/evidence/AC-013/GREEN-I045.md`, `LOCAL-GREEN.md` (new;
+  RED.md, GREEN.md retained from escalation turn)
+- `artifacts/review/explanation.md` (new, gitignored scratch)
+- `.agent/state/current.md` (this file)
 
 ## Worktree
-- HEAD SHA `e27ccd39a938670d9e9c5858151dd3e5b964b573`, no commits/pushes.
+- HEAD SHA `752d5671d55f01f5bd90d957779fc84d7a1e0721`, clean tree + untracked
+  `tests/restart.rs` + AC-013 evidence + scratch. No commits/pushes.
 
 ## Next step
-Stop. AC-012 local mechanics GREEN; `./hack/verify` green (the gate). I-080
-(integration) and S-080 (OpenShift cluster E2E) remain for their tiers. Do NOT
-start AC-013.
-
-## Open question for maintainer
-The `metrics` module API referenced by the proving tests (`LatencyStage`, `Metrics`,
-`MetricsSnapshot`, `ClassifyServer::metrics_snapshot`) was implemented as
-proposed. No spec drift/ambiguity encountered this turn; no escalation needed.
+STOP (criterion complete per this turn's scope). Await maintainer: AC-013
+local green recorded; S-020 remains for promotion tier.
