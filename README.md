@@ -3,9 +3,16 @@
 **The agentic software development lifecycle (ASDLC) scaffolding for building llm-d-sc** — the
 low-latency Rust semantic-classifier runtime that will eventually merge into a future upstream.
 
-This repository currently contains **process, not product**: the pipeline, gates, contracts,
-and evidence infrastructure that the implementation will be built inside. The classifier
-service itself lands later, driven by spec/TDD artifacts placed under `specs/`.
+This repository contains **both the process and the emerging product**. The 0.1 MVP is at
+14/14 LOCAL-GREEN (unit + local-integration evidence, each independently reviewed) and
+**0/14 PROMOTION-GREEN** — integration/system/performance evidence does not exist yet, and
+`hack/spec-check --promotion` refuses to call 0.1 complete until it does. Run
+`./hack/spec-check 0.1-mvp` for the live ledger, including every pending test ID.
+
+Known integration gap (tracked): the served gRPC path currently runs the deterministic
+synthetic pipeline; `CandleClassifier` is proven at parity in isolation but is not yet the
+serving backend, and the bounded queue is not yet the service's scheduler. Closing that
+vertical slice is the next work, before any performance measurement.
 
 > **Slow and Steady Wins the Race.**
 > Do not automate autonomy. Automate evidence.

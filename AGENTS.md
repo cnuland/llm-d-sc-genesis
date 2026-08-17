@@ -57,6 +57,11 @@ Read the active specification and test plan before editing implementation code.
 - Crate research: use Bash (grep/sed) on ~/.cargo/registry sources — the Read tool is
   blocked outside the project and will kill your turn.
 
+- When a corrective/hardening slice changes an implementation fact stated by an existing
+  whole-criterion evidence summary, you MUST regenerate that summary or append a
+  "SUPERSEDED FACTS" section. Evidence must never become historical mythology — the
+  reviewer reads it as current truth.
+
 ## Source of truth (in order)
 
 1. The maintainer's current explicit instruction
