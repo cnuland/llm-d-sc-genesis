@@ -9,10 +9,14 @@ This repository contains **both the process and the emerging product**. The 0.1 
 `hack/spec-check --promotion` refuses to call 0.1 complete until it does. Run
 `./hack/spec-check 0.1-mvp` for the live ledger, including every pending test ID.
 
-Known integration gap (tracked): the served gRPC path currently runs the deterministic
-synthetic pipeline; `CandleClassifier` is proven at parity in isolation but is not yet the
-serving backend, and the bounded queue is not yet the service's scheduler. Closing that
-vertical slice is the next work, before any performance measurement.
+Known integration gaps (tracked, in priority order — no performance conclusions until closed):
+1. The Candle forward executes ON the Tokio network worker; the bounded queue is not yet the
+   service's admission scheduler (ADR-0002 scopes the 0.1 handoff).
+2. The production Candle path bypasses the result cache and metrics — those live in the
+   synthetic test service, not in a shared service core.
+3. `CandleClassifier` loads the REAL model but ranks against SYNTHETIC prototypes from
+   `tests/fixtures/`, and reports synthetic revision metadata. Real sensitivity
+   classification requires the classifier definition to ship inside the OCI artifact.
 
 > **Slow and Steady Wins the Race.**
 > Do not automate autonomy. Automate evidence.
