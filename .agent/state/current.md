@@ -1,70 +1,66 @@
 # Working memory (rewrite aggressively; this is not history)
 
-## Active work (AC-014) — GREEN proven, gates pass, awaiting review
-Spec: 0.1-mvp
-Active criterion: AC-014 "default telemetry contains no raw prompt/session text."
-Tests mapped: `specs/0.1-mvp/test-plan.md` -> U-085 (raw prompt absent from
-default logs/metrics), I-085 (trace capture has IDs/hashes but no raw prompt).
-No OpenShift system test mapped to AC-014.
+## STATUS: CONVERGENCE SLICE 4 COMPLETE — benchmark methodology bug fixed, verify GREEN
 
-## This turn (worked directly, no subagents; maintainer directed steps 5-9)
-1. Read state, AC-014 RED evidence, `tests/telemetry.rs`, spec, test-plan,
-   TEST_MATRIX, AC-012/AC-013 GREEN/LOCAL-GREEN precedents, src/lib.rs,
-   src/metrics.rs, src/classify.rs, src/grpc/classify.rs, Cargo.toml.
-2. Implemented the smallest change:
-   - `src/telemetry.rs` (new): `Telemetry` (Arc<Mutex<Vec<TraceEvent>>>, Clone
-     shares state), `RequestEvent`, `TraceEvent`; `record_request` hashes
-     context (`ctx_`) and session (`sess_`) with blake3 (no raw text retained);
-     `default_output()` emits request_id/context_hash/session_hash lines;
-     `trace_capture()`.
-   - `src/lib.rs`: `pub mod telemetry;`.
-   - `src/grpc/classify.rs`: `ClassifyServiceImpl` holds a shared `Telemetry`;
-     handler records a `RequestEvent` BEFORE moving request fields into the
-     pipeline input; `ClassifyServer` holds shared `Telemetry` and exposes
-     `trace_capture() -> Vec<TraceEvent>`.
-   - `tests/grpc.rs`: mechanical call-site fix for the new constructor arity
-     (inseparable — reverting breaks the build).
-3. Ran `cargo test --locked --test telemetry` -> GREEN (2 passed, exit 0):
-   U-085 + I-085.
-4. Recorded GREEN evidence: `specs/0.1-mvp/evidence/AC-014/GREEN-U085.md`,
-   `GREEN-I085.md`. Wrote whole-criterion `LOCAL-GREEN.md` because every test
-   mapped to AC-014 (U-085, I-085) passes locally and no S-tier test exists.
-   PROMOTION-GREEN.md not written (reserved for integration/system/perf tiers;
-   worker never writes it).
-5. Gates:
-   - `./hack/test-impact src/telemetry.rs src/grpc/classify.rs src/lib.rs
-     tests/telemetry.rs tests/grpc.rs` -> FULL SUITE (unknown surface
-     `src/telemetry.rs`); full suite passes via verify.
-   - `./hack/spec-check 0.1-mvp` -> OK; AC-014: LOCAL-GREEN.
-   - `./hack/verify` -> EXIT 0 (fmt, clippy -D warnings, build, full workspace
-     suite all green; 5 Candle tests ignored pending fetch-model).
-6. Wrote engineering explanation to `artifacts/review/explanation.md`.
-7. Spec-check skill: diff satisfies exactly AC-014; the only out-of-surface hunk
-   (tests/grpc.rs call site) is inseparable (constructor arity change); no
-   non-goals in the diff.
+## What was done this turn (Convergence Slice 4 of 4)
+Fixed the AC-011 benchmark methodology bug found by external review: warmup sent
+keys 0..n and measure sent the SAME 0..n, so in CacheMode::Miss every measured
+request was actually a cache HIT.
 
-## Status
-AC-014 GREEN proven for the expected reason: the telemetry surface now exists,
-U-085/I-085 pass, and all gates pass. Implementation complete; criterion is
-LOCAL-GREEN and ready for review.
+1. **Key-space separation**: measured keys live in a per-run namespace
+   `measure-{run_id}-{i}` (`run_id` unique per `BenchmarkRun`); miss-mode warmup
+   uses the disjoint `warm-{i}` namespace so measured miss keys are never
+   pre-warmed; hit-mode warmup deliberately pre-warms exactly the measured keys.
+2. **Harness proves its own methodology**: `BenchmarkRun::with_metrics` shares
+   the server's `Metrics`; `measure`/`measure_concurrent` snapshot
+   cache_hits/cache_misses deltas around the measured window and assert
+   miss-mode `delta_misses == measured` (+ hits==0) and hit-mode
+   `delta_hits == measured` (+ misses==0). Violations return
+   `BenchError::Methodology`.
+3. **Concurrency**: `measure_concurrent(n, concurrency)` uses per-worker
+   `DummyPraxis` clients over the persistent channel (P-020 concurrency 1 /
+   P-021 concurrency 4), recording the same distributions + self-check.
+4. **Tests**: 6 unit tests in src/bench.rs (keyspace separation, methodology
+   rejection, monotone percentiles) + 13 integration tests in tests/bench_rtt.rs
+   (serial hit/miss sidecar/clusterip, direct counter invariants, concurrency
+   1 & 4, wired-in self-check). Plain tests, no cluster.
+5. **End-to-end proof** the old bug is caught: artifacts/old_bug_proof.rs
+   (gitignored) reuses measured keys across windows in miss mode; the harness's
+   own self-check REJECTS it.
 
-## Files changed (uncommitted, no commit/push)
-- `src/telemetry.rs` (new)
-- `src/lib.rs` (added `pub mod telemetry;`)
-- `src/grpc/classify.rs` (telemetry wiring + `trace_capture`)
-- `tests/grpc.rs` (call-site fix)
-- `tests/telemetry.rs` (new, U-085/I-085)
-- `specs/0.1-mvp/evidence/AC-014/RED.md`, `GREEN-U085.md`, `GREEN-I085.md`,
-  `LOCAL-GREEN.md`
-- `artifacts/review/explanation.md`
-- `.agent/state/current.md` (this file)
+## Evidence
+- `specs/0.1-mvp/evidence/AC-011/BENCH-methodology-fix.md` (new)
 
-## Worktree
-- HEAD SHA `259e707f8e5a2c3a030e84df9d9413295f5184e6` (unchanged; no commits).
-- Working tree: `M .agent/state/current.md M src/grpc/classify.rs M src/lib.rs
-  M tests/grpc.rs ?? src/telemetry.rs ?? tests/telemetry.rs ??
-  specs/0.1-mvp/evidence/AC-014/`.
+## Gates (all GREEN)
+- `./hack/spec-check 0.1-mvp` -> OK (AC-011 pending only P-030..P-033,S-001/S-002,
+  which are cluster-tier and remain PENDING)
+- `./hack/test-impact src/bench.rs src/grpc/classify.rs tests/bench_rtt.rs` ->
+  FULL SUITE (src/* unknown surface; verify runs the whole suite)
+- `./hack/verify` -> exit 0, no failures
+
+## Files changed this turn
+- src/bench.rs (methodology fix, key namespaces, concurrency)
+- src/grpc/classify.rs (added ClassifyServer::bind_with_metrics)
+- tests/bench_rtt.rs (updated + new methodology/concurrency tests)
+- specs/0.1-mvp/evidence/AC-011/BENCH-methodology-fix.md (new)
+- .agent/state/current.md (this file)
+
+## Uncommitted pre-existing work NOT part of this slice
+The AC-002/AC-003 realserve files (src/bin/server.rs, src/classify.rs,
+src/runtime.rs, tests/realserve.rs), proto/classify.proto, and Convergence
+Slice 1 files remain uncommitted in the worktree from earlier turns; disposition
+still to be decided by the maintainer. This slice's changes to
+src/grpc/classify.rs and tests/bench_rtt.rs are layered on top of that
+uncommitted work.
 
 ## Next step
-STOP after this criterion. Await maintainer review. Do not start the next
-criterion opportunistically.
+STOP per instruction. No further criterion started this turn. (Cluster
+measurement P-030..P-033/S-001/S-002 remains PENDING by design — this slice
+only fixed the benchmark methodology so those measurements would be valid.)
+
+## Uncertainty
+None blocking. The harness's methodology self-check requires a shared
+`Metrics` handle (server bound via `bind_with_metrics`); on the cluster the
+harness must obtain the service's counters the same way (metrics surface) for
+the self-check to run. This is a documented consideration for the cluster
+deployment phase.
