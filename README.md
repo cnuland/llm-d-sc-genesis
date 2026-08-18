@@ -67,7 +67,7 @@ evals/                       eval.yaml, datasets, and the Fable reviewer rubric
 docs/                        SDD.md, TDD.md, VERSIONS.md (0.x roadmap), PROCESS_REVIEW.md,
                              architecture notes
 tests/                       TEST_MATRIX.md (evidence-anchored test IDs), HOMELAB.md,
-                             GITHUB_ACTIONS.md, DUMMY_PRAXIS.md, fixtures/modelcar/
+                             GITHUB_ACTIONS.md, DUMMY_GATEWAY.md, fixtures/modelcar/
 ```
 
 ## The conducted loop (home lab)
@@ -97,7 +97,7 @@ as truth without repository evidence. No unrelated refactoring bundled into a pa
 ## Target system context (for orientation only — NOT built here yet)
 
 llm-d-sc is the semantic-classification component of a three-part system:
-**Praxis** (intelligent routing — github.com/praxis-proxy/praxis) consumes ranked
+**the AI Gateway** (intelligent routing — github.com/gateway-proxy/gateway) consumes ranked
 domain/complexity/sensitivity signals from **llm-d-sc** (this project: classify, never
 route), improved offline by a **classifier optimization loop** (SDG Hub / Training Hub).
 The service will be Rust: tokio + tonic/axum, Candle + ModernBERT, moka cache, bounded

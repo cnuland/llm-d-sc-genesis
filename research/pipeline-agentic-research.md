@@ -669,7 +669,7 @@ A sophisticated memory service does not automatically give you better engineerin
 
 This is where your proposed stack fits together particularly well.
 
-Red Hat's EvalHub is an evaluation-orchestration service for LLM evaluations in OpenShift AI and integrates evaluation results with MLflow. citeturn18search1 Even more useful for your case, the Open Data Hub **Agent Eval Harness** now provides a declarative `eval.yaml` that can run the same evaluation design locally, in containers, and through EvalHub, while supporting code and LLM judges, thresholds, pairwise evaluations, reports, and MLflow traces. citeturn19view1
+Red Hat's EvalHub is an evaluation-orchestration service for LLM evaluations in a Kubernetes model-serving platform and integrates evaluation results with MLflow. citeturn18search1 Even more useful for your case, the Open Data Hub **Agent Eval Harness** now provides a declarative `eval.yaml` that can run the same evaluation design locally, in containers, and through EvalHub, while supporting code and LLM judges, thresholds, pairwise evaluations, reports, and MLflow traces. citeturn19view1
 
 That means **do not build another proprietary eval framework**.
 

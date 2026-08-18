@@ -146,7 +146,7 @@ Pre-1.0, phased. See [`docs/VERSIONS.md`](docs/VERSIONS.md).
 | 0.21 | performance characterisation and named hardware profiles | not started |
 | 0.22 | cache/session optimisation and abstention on context loss | not started |
 | 0.23 | multi-signal runtime | not started |
-| 0.30 | production-like Kubernetes/OpenShift validation | not started |
+| 0.30 | production-like Kubernetes validation | not started |
 
 **Known gaps, stated plainly:**
 
