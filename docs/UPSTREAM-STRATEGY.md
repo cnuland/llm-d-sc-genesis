@@ -145,3 +145,22 @@ language pre-1.0, and any implication that the sensitivity taxonomy is verified.
 
 Doing step 2 in genesis first means the rename is reviewed under the existing
 evidence gates rather than performed blind during a history rewrite.
+
+
+## Issue backlog additions (signal types and custom domains)
+
+From the maintainer, 2026-08-18: release 0.1 is a GENERIC domain classifier.
+Everything below is future work and must exist as tracked issues rather than
+README caveats, so each incomplete capability maps to an issue:
+
+| Issue | Capability | Notes |
+|---|---|---|
+| complexity signal | estimate prompt complexity/depth to drive model tiering | needs a classifier or heuristic + calibration |
+| sensitivity signal | data sensitivity / risk level | the early fixture model becomes an opt-in backend here; taxonomy still needs verifying |
+| cost signal | cost/budget-aware routing evidence | likely derived rather than a model |
+| custom domain classifiers | route by business function: sales, shipping, finance, support | the key adopter-facing capability; needs a documented path to bring your own labels |
+| multi-signal response | several signal types in ONE response with independent status | phase 0.23; partial failure semantics matter |
+| per-classifier lanes | separate queues/concurrency per classifier | prevents one signal starving another |
+
+The generic classifier stays the default in every case; custom and additional
+classifiers are opt-in by configuration (ADR-0005).
