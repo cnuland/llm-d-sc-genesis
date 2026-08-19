@@ -1,0 +1,80 @@
+{"id": 0, "text": "What is the wingspan of an albatross?", "tier": "SIMPLE", "hard": false}
+{"id": 1, "text": "How many strings does a standard ukulele have?", "tier": "SIMPLE", "hard": false}
+{"id": 2, "text": "What is the tallest mountain in Africa?", "tier": "SIMPLE", "hard": false}
+{"id": 3, "text": "Convert 3 cups of flour to grams.", "tier": "SIMPLE", "hard": false}
+{"id": 4, "text": "What does the abbreviation ETA stand for?", "tier": "SIMPLE", "hard": false}
+{"id": 5, "text": "Who is the current record holder for the marathon world record?", "tier": "SIMPLE", "hard": false}
+{"id": 6, "text": "What is the freezing point of seawater?", "tier": "SIMPLE", "hard": false}
+{"id": 7, "text": "Name the largest desert on Earth.", "tier": "SIMPLE", "hard": false}
+{"id": 8, "text": "What key is a standard harmonica in?", "tier": "SIMPLE", "hard": false}
+{"id": 9, "text": "How long is a regulation Olympic swimming pool?", "tier": "SIMPLE", "hard": false}
+{"id": 10, "text": "What is the currency of Norway?", "tier": "SIMPLE", "hard": false}
+{"id": 11, "text": "Turn off the porch light.", "tier": "SIMPLE", "hard": false}
+{"id": 12, "text": "How do you spell the plural of cactus?", "tier": "SIMPLE", "hard": false}
+{"id": 13, "text": "What is 15 percent of 240?", "tier": "SIMPLE", "hard": false}
+{"id": 14, "text": "When was the Eiffel Tower completed?", "tier": "SIMPLE", "hard": false}
+{"id": 15, "text": "Explain in one sentence why bread rises.", "tier": "SIMPLE", "hard": true}
+{"id": 16, "text": "What is the difference between a violin and a viola?", "tier": "SIMPLE", "hard": true}
+{"id": 17, "text": "Briefly, what does a soil pH of 5.5 mean for a garden?", "tier": "SIMPLE", "hard": true}
+{"id": 18, "text": "In a sentence, what is the point of crop rotation?", "tier": "SIMPLE", "hard": true}
+{"id": 19, "text": "What is the main reason airplanes have winglets?", "tier": "SIMPLE", "hard": true}
+{"id": 20, "text": "Write a function that parses an ISO 8601 timestamp and returns the day of the week.", "tier": "MEDIUM", "hard": false}
+{"id": 21, "text": "Explain how a sailboat can travel upwind, with a diagram description.", "tier": "MEDIUM", "hard": false}
+{"id": 22, "text": "Create a watering schedule for a greenhouse of tomatoes across a growing season.", "tier": "MEDIUM", "hard": false}
+{"id": 23, "text": "Write a shell command that renames every .jpeg file in a folder to .jpg.", "tier": "MEDIUM", "hard": false}
+{"id": 24, "text": "Summarize the rules of cricket for someone who already understands baseball.", "tier": "MEDIUM", "hard": false}
+{"id": 25, "text": "Draft a two week training plan for a first time half marathon runner.", "tier": "MEDIUM", "hard": false}
+{"id": 26, "text": "Write a spreadsheet formula that flags any row where inventory falls below reorder point.", "tier": "MEDIUM", "hard": false}
+{"id": 27, "text": "Explain how noise ordinances typically work in residential zoning, with an example.", "tier": "MEDIUM", "hard": false}
+{"id": 28, "text": "Write a short guide to tuning a bicycle derailleur.", "tier": "MEDIUM", "hard": false}
+{"id": 29, "text": "Create a packing checklist for a five day alpine backpacking trip with weight targets.", "tier": "MEDIUM", "hard": false}
+{"id": 30, "text": "Explain the difference between mesh and bridge Wi-Fi extenders with a use case for each.", "tier": "MEDIUM", "hard": false}
+{"id": 31, "text": "Write a regular expression that matches a valid ISBN-13.", "tier": "MEDIUM", "hard": false}
+{"id": 32, "text": "Describe how to read a nautical chart symbol legend, with three examples.", "tier": "MEDIUM", "hard": false}
+{"id": 33, "text": "Write a small script that converts a folder of WAV files to MP3 at a fixed bitrate.", "tier": "MEDIUM", "hard": false}
+{"id": 34, "text": "Explain how sourdough starter hydration percentage changes the final loaf.", "tier": "MEDIUM", "hard": false}
+{"id": 35, "text": "Write a function that validates a shipping address and normalizes it to a canonical form.", "tier": "MEDIUM", "hard": true}
+{"id": 36, "text": "Explain how a heat pump works and calculate the coefficient of performance for a given case.", "tier": "MEDIUM", "hard": true}
+{"id": 37, "text": "Build a simple budget model for a small farm's first year of operation.", "tier": "MEDIUM", "hard": true}
+{"id": 38, "text": "Write a program that detects the tempo of a music file and prints beats per minute.", "tier": "MEDIUM", "hard": true}
+{"id": 39, "text": "Explain how airport ground crews sequence departures during a weather delay.", "tier": "MEDIUM", "hard": true}
+{"id": 40, "text": "Design an irrigation control system for a vineyard with soil sensors, weather forecasts, and zone scheduling.", "tier": "COMPLEX", "hard": false}
+{"id": 41, "text": "Architect a ticketing platform for a music festival handling presale surges, seat maps, and fraud checks.", "tier": "COMPLEX", "hard": false}
+{"id": 42, "text": "Build a fleet maintenance system for a bus network with predictive scheduling and parts inventory.", "tier": "COMPLEX", "hard": false}
+{"id": 43, "text": "Design a warehouse robotics coordination layer with collision avoidance, charging, and task assignment.", "tier": "COMPLEX", "hard": false}
+{"id": 44, "text": "Create an end to end pipeline that ingests marine sensor telemetry, detects anomalies, and archives to cold storage.", "tier": "COMPLEX", "hard": false}
+{"id": 45, "text": "Architect a multi region flight booking system with inventory reconciliation and overbooking policy.", "tier": "COMPLEX", "hard": false}
+{"id": 46, "text": "Design a library lending platform with holds, interbranch transfers, fines, and patron privacy rules.", "tier": "COMPLEX", "hard": false}
+{"id": 47, "text": "Build a live scoring system for a sailing regatta with handicap calculation and protest handling.", "tier": "COMPLEX", "hard": false}
+{"id": 48, "text": "Design a supply chain traceability system for coffee from farm to roaster with chain of custody.", "tier": "COMPLEX", "hard": false}
+{"id": 49, "text": "Create a broadcast automation system that schedules playlists, ad insertion, and emergency overrides.", "tier": "COMPLEX", "hard": false}
+{"id": 50, "text": "Architect a stadium access control system with turnstiles, offline fallback, and real time capacity limits.", "tier": "COMPLEX", "hard": false}
+{"id": 51, "text": "Design a citywide bikeshare rebalancing system with demand forecasting and crew dispatch.", "tier": "COMPLEX", "hard": false}
+{"id": 52, "text": "Build a manufacturing quality inspection platform integrating cameras, defect models, and line stoppage.", "tier": "COMPLEX", "hard": false}
+{"id": 53, "text": "Design a hotel revenue management system with dynamic pricing, channel sync, and cancellation policy.", "tier": "COMPLEX", "hard": false}
+{"id": 54, "text": "Architect a wildfire alerting network with sensor mesh, satellite feeds, and tiered notification.", "tier": "COMPLEX", "hard": false}
+{"id": 55, "text": "Refactor a single farm management app into separate services for livestock, crops, and equipment without downtime.", "tier": "COMPLEX", "hard": true}
+{"id": 56, "text": "Migrate a museum's collection database to a new schema while preserving provenance records and audit trails.", "tier": "COMPLEX", "hard": true}
+{"id": 57, "text": "Design an offline first field survey app that syncs conflicting edits from multiple biologists.", "tier": "COMPLEX", "hard": true}
+{"id": 58, "text": "Build a scheduling engine for an orchestra season balancing venue, musician, and rehearsal constraints.", "tier": "COMPLEX", "hard": true}
+{"id": 59, "text": "Create a rate limiting and quota layer for a public transit API with tiered partners and burst allowances.", "tier": "COMPLEX", "hard": true}
+{"id": 60, "text": "Prove that the square root of 3 is irrational.", "tier": "REASONING", "hard": false}
+{"id": 61, "text": "Derive the expected number of coupons needed to complete a set in the coupon collector problem.", "tier": "REASONING", "hard": false}
+{"id": 62, "text": "Prove that any tree with n vertices has exactly n minus 1 edges.", "tier": "REASONING", "hard": false}
+{"id": 63, "text": "Show that the greedy algorithm for interval scheduling is optimal using an exchange argument.", "tier": "REASONING", "hard": false}
+{"id": 64, "text": "Derive the equations of motion for a simple pendulum using the Lagrangian.", "tier": "REASONING", "hard": false}
+{"id": 65, "text": "Prove that no algorithm can sort n items with fewer than n log n comparisons in the worst case.", "tier": "REASONING", "hard": false}
+{"id": 66, "text": "Analyze the stationary distribution of this Markov chain and prove it is unique.", "tier": "REASONING", "hard": false}
+{"id": 67, "text": "Derive the closed form for the sum of a geometric series and state the convergence condition.", "tier": "REASONING", "hard": false}
+{"id": 68, "text": "Prove that the intersection of two convex sets is convex.", "tier": "REASONING", "hard": false}
+{"id": 69, "text": "Show why the pigeonhole principle guarantees a repeated remainder in this construction.", "tier": "REASONING", "hard": false}
+{"id": 70, "text": "Derive Bayes rule from the definition of conditional probability and apply it to a diagnostic test.", "tier": "REASONING", "hard": false}
+{"id": 71, "text": "Prove termination of this while loop by exhibiting a decreasing well founded measure.", "tier": "REASONING", "hard": false}
+{"id": 72, "text": "Analyze whether this voting scheme satisfies the conditions of Arrow's impossibility theorem.", "tier": "REASONING", "hard": false}
+{"id": 73, "text": "Derive the variance of the sample mean for independent identically distributed observations.", "tier": "REASONING", "hard": false}
+{"id": 74, "text": "Prove that a bipartite graph contains no odd length cycle.", "tier": "REASONING", "hard": false}
+{"id": 75, "text": "Determine whether this scheduling policy can starve a process and justify the answer formally.", "tier": "REASONING", "hard": true}
+{"id": 76, "text": "Reason about whether this distributed protocol preserves linearizability under message reordering.", "tier": "REASONING", "hard": true}
+{"id": 77, "text": "Argue from first principles whether this pricing mechanism is incentive compatible.", "tier": "REASONING", "hard": true}
+{"id": 78, "text": "Establish a loop invariant for this binary search and prove the returned index is correct.", "tier": "REASONING", "hard": true}
+{"id": 79, "text": "Analyze the amortized cost of this union find implementation with path compression.", "tier": "REASONING", "hard": true}

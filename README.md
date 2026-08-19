@@ -9,14 +9,26 @@ This repository contains **both the process and the emerging product**. The 0.1 
 `hack/spec-check --promotion` refuses to call 0.1 complete until it does. Run
 `./hack/spec-check 0.1-mvp` for the live ledger, including every pending test ID.
 
-Known integration gaps (tracked, in priority order — no performance conclusions until closed):
-1. The Candle forward executes ON the Tokio network worker; the bounded queue is not yet the
-   service's admission scheduler (ADR-0002 scopes the 0.1 handoff).
-2. The production Candle path bypasses the result cache and metrics — those live in the
-   synthetic test service, not in a shared service core.
-3. `CandleClassifier` loads the REAL model but ranks against SYNTHETIC prototypes from
-   `tests/fixtures/`, and reports synthetic revision metadata. Real sensitivity
-   classification requires the classifier definition to ship inside the OCI artifact.
+Classification is REAL as of the taxonomy slice: three classifier definitions
+(`complexity`, `cost`, `sensitivity`) are compiled into the binary, ranked against
+labelled anchors embedded by the resident model, and a custom definition can be
+supplied by path without a rebuild. Try it:
+
+```
+./hack/fetch-model --classifier complexity
+./target/release/llm-d-sc-classify "Prove that the square root of two is irrational."
+```
+
+Previously-tracked integration gaps, all now closed with executed-test evidence:
+1. CLOSED - the model forward runs on a dedicated executor thread pool off the
+   Tokio network workers (`I-090`/`I-091` prove real parallelism, not just admission).
+2. CLOSED - the production Candle path runs through the shared `ServiceCore`, so
+   the result cache and metrics are on the real path.
+3. CLOSED - `CandleClassifier` ranks against a real taxonomy and reports that
+   taxonomy's revisions (`I-072`/`I-073`/`I-074`); synthetic prototypes are now
+   confined to weight-free tests.
+
+Open work is tracked in `upstream-staging/docs/known-gaps.md`.
 
 > **Slow and Steady Wins the Race.**
 > Do not automate autonomy. Automate evidence.

@@ -1,0 +1,60 @@
+{"id": 0, "text": "What is the boiling point of ethanol?", "tier": "MINIMAL", "hard": false}
+{"id": 1, "text": "How many players are on a netball team?", "tier": "MINIMAL", "hard": false}
+{"id": 2, "text": "What does the acronym SONAR stand for?", "tier": "MINIMAL", "hard": false}
+{"id": 3, "text": "What is the largest island in the Mediterranean?", "tier": "MINIMAL", "hard": false}
+{"id": 4, "text": "Round 7.86 to one decimal place.", "tier": "MINIMAL", "hard": false}
+{"id": 5, "text": "What is the atomic number of carbon?", "tier": "MINIMAL", "hard": false}
+{"id": 6, "text": "Who wrote the opera Carmen?", "tier": "MINIMAL", "hard": false}
+{"id": 7, "text": "How far is the Moon from Earth on average?", "tier": "MINIMAL", "hard": false}
+{"id": 8, "text": "What is the plural of index?", "tier": "MINIMAL", "hard": false}
+{"id": 9, "text": "Dim the kitchen lights to fifty percent.", "tier": "MINIMAL", "hard": false}
+{"id": 10, "text": "What is the difference between a comet and an asteroid?", "tier": "MINIMAL", "hard": true}
+{"id": 11, "text": "Name the three branches of the United States government.", "tier": "MINIMAL", "hard": true}
+{"id": 12, "text": "What does a catalytic converter do?", "tier": "MINIMAL", "hard": true}
+{"id": 13, "text": "How long does concrete take to cure?", "tier": "MINIMAL", "hard": true}
+{"id": 14, "text": "What is the function of a flywheel?", "tier": "MINIMAL", "hard": true}
+{"id": 15, "text": "Write a brief summary of what DNS resolution does.", "tier": "LOW", "hard": false}
+{"id": 16, "text": "Give me a quick recipe for overnight oats.", "tier": "LOW", "hard": false}
+{"id": 17, "text": "Explain in a short paragraph how compound interest works.", "tier": "LOW", "hard": false}
+{"id": 18, "text": "Write a two sentence bio for a conference speaker.", "tier": "LOW", "hard": false}
+{"id": 19, "text": "Suggest four titles for a podcast about urban gardening.", "tier": "LOW", "hard": false}
+{"id": 20, "text": "Write a short git command sequence to undo the last commit.", "tier": "LOW", "hard": false}
+{"id": 21, "text": "Briefly compare cast iron and stainless steel pans.", "tier": "LOW", "hard": false}
+{"id": 22, "text": "Rewrite this paragraph to be more formal.", "tier": "LOW", "hard": false}
+{"id": 23, "text": "Give a short explanation of what a VPN does for a non technical reader.", "tier": "LOW", "hard": false}
+{"id": 24, "text": "Write a concise apology email for a delayed shipment.", "tier": "LOW", "hard": false}
+{"id": 25, "text": "Explain the tradeoffs between renting and buying a home in a few sentences.", "tier": "LOW", "hard": true}
+{"id": 26, "text": "Summarize the causes of the 1929 stock market crash briefly.", "tier": "LOW", "hard": true}
+{"id": 27, "text": "Give a short overview of how vaccines create immunity.", "tier": "LOW", "hard": true}
+{"id": 28, "text": "Explain what a mortgage escrow account is in a short paragraph.", "tier": "LOW", "hard": true}
+{"id": 29, "text": "Briefly describe how tides are generated.", "tier": "LOW", "hard": true}
+{"id": 30, "text": "Write a complete integration test suite for a hotel booking API including failure cases.", "tier": "MODERATE", "hard": false}
+{"id": 31, "text": "Draft a detailed employee handbook section on remote work covering equipment, hours, and expenses.", "tier": "MODERATE", "hard": false}
+{"id": 32, "text": "Write a thorough guide to selecting and installing home solar with sizing calculations.", "tier": "MODERATE", "hard": false}
+{"id": 33, "text": "Produce a full curriculum outline for a semester of introductory statistics with assessments.", "tier": "MODERATE", "hard": false}
+{"id": 34, "text": "Write a detailed technical article on caching strategies with worked examples and benchmarks.", "tier": "MODERATE", "hard": false}
+{"id": 35, "text": "Create a comprehensive incident response playbook for a small IT team.", "tier": "MODERATE", "hard": false}
+{"id": 36, "text": "Write a complete Go package that implements a rate limiter with tests and documentation.", "tier": "MODERATE", "hard": false}
+{"id": 37, "text": "Draft a detailed request for proposal for a new inventory management system.", "tier": "MODERATE", "hard": false}
+{"id": 38, "text": "Write an extensive buying guide for road bicycles covering frames, groupsets, and fit.", "tier": "MODERATE", "hard": false}
+{"id": 39, "text": "Produce a step by step disaster recovery runbook for a small business with recovery objectives.", "tier": "MODERATE", "hard": false}
+{"id": 40, "text": "Write a thorough README for an open source library including usage, configuration, and examples.", "tier": "MODERATE", "hard": true}
+{"id": 41, "text": "Draft a detailed sprint retrospective template with facilitation notes for each section.", "tier": "MODERATE", "hard": true}
+{"id": 42, "text": "Write a complete tutorial on setting up continuous integration for a Python project.", "tier": "MODERATE", "hard": true}
+{"id": 43, "text": "Produce a detailed nutrition and training guide for a twelve week strength program.", "tier": "MODERATE", "hard": true}
+{"id": 44, "text": "Write a comprehensive comparison of four cloud storage providers with pricing scenarios.", "tier": "MODERATE", "hard": true}
+{"id": 45, "text": "Read these thirty research papers and produce a full literature review with citations.", "tier": "HIGH", "hard": false}
+{"id": 46, "text": "Analyze this entire multi year financial dataset and produce a complete forecasting report.", "tier": "HIGH", "hard": false}
+{"id": 47, "text": "Review every page of this regulatory filing and produce an exhaustive obligations register.", "tier": "HIGH", "hard": false}
+{"id": 48, "text": "Generate a complete design system specification covering every component, state, and token.", "tier": "HIGH", "hard": false}
+{"id": 49, "text": "Translate this full technical manual of six hundred pages into German with a glossary.", "tier": "HIGH", "hard": false}
+{"id": 50, "text": "Process these two hundred support tickets and produce a full root cause taxonomy with examples.", "tier": "HIGH", "hard": false}
+{"id": 51, "text": "Write a complete textbook chapter set covering an entire semester of linear algebra.", "tier": "HIGH", "hard": false}
+{"id": 52, "text": "Audit this whole monorepo and produce a per package dependency and security assessment.", "tier": "HIGH", "hard": false}
+{"id": 53, "text": "Synthesize a comprehensive market analysis from these forty industry reports.", "tier": "HIGH", "hard": false}
+{"id": 54, "text": "Produce a full environmental impact assessment covering every category with supporting data.", "tier": "HIGH", "hard": false}
+{"id": 55, "text": "Summarize every chapter of this long novel and analyze the character arcs throughout.", "tier": "HIGH", "hard": true}
+{"id": 56, "text": "Go through this entire year of meeting transcripts and build a decision log with rationale.", "tier": "HIGH", "hard": true}
+{"id": 57, "text": "Analyze this complete set of clinical study reports and produce a pooled safety summary.", "tier": "HIGH", "hard": true}
+{"id": 58, "text": "Review all of our documentation and produce a rewritten information architecture with drafts.", "tier": "HIGH", "hard": true}
+{"id": 59, "text": "Process this archive of historical newspapers and produce a longitudinal thematic analysis.", "tier": "HIGH", "hard": true}

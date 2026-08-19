@@ -1,0 +1,75 @@
+{"id": 0, "text": "Why is the sky blue?", "tier": "PUBLIC", "hard": false}
+{"id": 1, "text": "Write a limerick about a cat who learns to code.", "tier": "PUBLIC", "hard": false}
+{"id": 2, "text": "What is the capital of Mongolia?", "tier": "PUBLIC", "hard": false}
+{"id": 3, "text": "Explain the difference between weather and climate.", "tier": "PUBLIC", "hard": false}
+{"id": 4, "text": "How does a refrigerator actually keep food cold?", "tier": "PUBLIC", "hard": false}
+{"id": 5, "text": "Recommend three beginner hiking trails near a coastline.", "tier": "PUBLIC", "hard": false}
+{"id": 6, "text": "What is the time complexity of quicksort in the average case?", "tier": "PUBLIC", "hard": false}
+{"id": 7, "text": "Translate 'the library opens at nine' into German.", "tier": "PUBLIC", "hard": false}
+{"id": 8, "text": "Who painted the ceiling of the Sistine Chapel?", "tier": "PUBLIC", "hard": false}
+{"id": 9, "text": "How do noise cancelling headphones work?", "tier": "PUBLIC", "hard": false}
+{"id": 10, "text": "What makes a password strong, in general terms?", "tier": "PUBLIC", "hard": true}
+{"id": 11, "text": "Explain what HIPAA regulates at a high level.", "tier": "PUBLIC", "hard": true}
+{"id": 12, "text": "What is the purpose of a private key in public key cryptography?", "tier": "PUBLIC", "hard": true}
+{"id": 13, "text": "How do companies usually structure an internal on-call rotation?", "tier": "PUBLIC", "hard": true}
+{"id": 14, "text": "What does the term 'material non-public information' mean?", "tier": "PUBLIC", "hard": true}
+{"id": 15, "text": "Where do we track flaky tests for the checkout service?", "tier": "INTERNAL", "hard": false}
+{"id": 16, "text": "What is the escalation path when the nightly batch job fails?", "tier": "INTERNAL", "hard": false}
+{"id": 17, "text": "How do I get added to the platform engineering mailing list?", "tier": "INTERNAL", "hard": false}
+{"id": 18, "text": "Which dashboard shows queue depth for the notification workers?", "tier": "INTERNAL", "hard": false}
+{"id": 19, "text": "Summarize our code review expectations for first time contributors.", "tier": "INTERNAL", "hard": false}
+{"id": 20, "text": "What is the process for requesting a new CI runner pool?", "tier": "INTERNAL", "hard": false}
+{"id": 21, "text": "Where are the architecture diagrams for the search subsystem stored?", "tier": "INTERNAL", "hard": false}
+{"id": 22, "text": "How long do we retain build artifacts in the internal registry?", "tier": "INTERNAL", "hard": false}
+{"id": 23, "text": "Who maintains the shared Terraform modules repository?", "tier": "INTERNAL", "hard": false}
+{"id": 24, "text": "What is our internal policy on using feature flags in production?", "tier": "INTERNAL", "hard": false}
+{"id": 25, "text": "What did we decide in the design review about the new rate limiter?", "tier": "INTERNAL", "hard": true}
+{"id": 26, "text": "Draft an all-hands agenda covering the reorganization of the platform team.", "tier": "INTERNAL", "hard": true}
+{"id": 27, "text": "Summarize the postmortem for last Tuesday's partial outage.", "tier": "INTERNAL", "hard": true}
+{"id": 28, "text": "What are the current headcount plans for the infrastructure group?", "tier": "INTERNAL", "hard": true}
+{"id": 29, "text": "Which vendors are we currently evaluating for log storage?", "tier": "INTERNAL", "hard": true}
+{"id": 30, "text": "Summarize the term sheet for the pending Series C round.", "tier": "CONFIDENTIAL", "hard": false}
+{"id": 31, "text": "What is the exit strategy discussed in the confidential investor memo?", "tier": "CONFIDENTIAL", "hard": false}
+{"id": 32, "text": "Draft an internal note about the unreleased pricing change for enterprise tier.", "tier": "CONFIDENTIAL", "hard": false}
+{"id": 33, "text": "Review the non-public financial projections for the next four quarters.", "tier": "CONFIDENTIAL", "hard": false}
+{"id": 34, "text": "Summarize the due diligence findings on the target company.", "tier": "CONFIDENTIAL", "hard": false}
+{"id": 35, "text": "What severance terms were proposed in the executive separation agreement?", "tier": "CONFIDENTIAL", "hard": false}
+{"id": 36, "text": "Outline the confidential partnership terms with the hardware supplier.", "tier": "CONFIDENTIAL", "hard": false}
+{"id": 37, "text": "Prepare a briefing on our undisclosed patent filing strategy.", "tier": "CONFIDENTIAL", "hard": false}
+{"id": 38, "text": "What did the internal audit find about revenue recognition practices?", "tier": "CONFIDENTIAL", "hard": false}
+{"id": 39, "text": "Summarize the confidential customer churn analysis by account.", "tier": "CONFIDENTIAL", "hard": false}
+{"id": 40, "text": "Compare our win rate against the competitor using the private deal database.", "tier": "CONFIDENTIAL", "hard": true}
+{"id": 41, "text": "Draft messaging for the layoff that has not been announced yet.", "tier": "CONFIDENTIAL", "hard": true}
+{"id": 42, "text": "What is in the sealed settlement agreement with the former employee?", "tier": "CONFIDENTIAL", "hard": true}
+{"id": 43, "text": "Summarize the red team report describing unpatched vulnerabilities in production.", "tier": "CONFIDENTIAL", "hard": true}
+{"id": 44, "text": "What is the internal cost basis we use when quoting enterprise deals?", "tier": "CONFIDENTIAL", "hard": true}
+{"id": 45, "text": "Summarize this patient's oncology treatment plan and prior chemotherapy cycles.", "tier": "REGULATED", "hard": false}
+{"id": 46, "text": "Here are the cardholder numbers from yesterday's transactions, find the duplicates.", "tier": "REGULATED", "hard": false}
+{"id": 47, "text": "Extract dates of birth and home addresses from this customer export.", "tier": "REGULATED", "hard": false}
+{"id": 48, "text": "Analyze these payroll records including individual salaries and tax IDs.", "tier": "REGULATED", "hard": false}
+{"id": 49, "text": "Prepare an anonymized summary of these minors' school disciplinary records.", "tier": "REGULATED", "hard": false}
+{"id": 50, "text": "Review this insurance claim containing the claimant's medical history.", "tier": "REGULATED", "hard": false}
+{"id": 51, "text": "Cross reference these passport numbers against the travel booking system.", "tier": "REGULATED", "hard": false}
+{"id": 52, "text": "Summarize the genetic test results for this family cohort.", "tier": "REGULATED", "hard": false}
+{"id": 53, "text": "Validate these IBAN numbers and the associated account holder names.", "tier": "REGULATED", "hard": false}
+{"id": 54, "text": "Draft a breach notification listing the affected individuals and their PII.", "tier": "REGULATED", "hard": false}
+{"id": 55, "text": "Help me build a data retention schedule for the patient records we store.", "tier": "REGULATED", "hard": true}
+{"id": 56, "text": "Write a script that hashes the social security numbers in this file.", "tier": "REGULATED", "hard": true}
+{"id": 57, "text": "Summarize the biometric templates collected from these enrolled users.", "tier": "REGULATED", "hard": true}
+{"id": 58, "text": "Review this loan file including the applicant's credit report and identifiers.", "tier": "REGULATED", "hard": true}
+{"id": 59, "text": "Process this consent form containing the participant's health identifiers.", "tier": "REGULATED", "hard": true}
+{"id": 60, "text": "Here is the service account JSON key for our GCP project, parse the fields.", "tier": "NEVER_EGRESS", "hard": false}
+{"id": 61, "text": "This is our Stripe live secret key, help me write the webhook handler.", "tier": "NEVER_EGRESS", "hard": false}
+{"id": 62, "text": "Take this database connection string with the embedded password and refactor it.", "tier": "NEVER_EGRESS", "hard": false}
+{"id": 63, "text": "Here is the private TLS certificate key, verify it matches the public cert.", "tier": "NEVER_EGRESS", "hard": false}
+{"id": 64, "text": "This dump contains our production session signing secret, explain the encoding.", "tier": "NEVER_EGRESS", "hard": false}
+{"id": 65, "text": "Here is our GitHub personal access token, script the repository migration.", "tier": "NEVER_EGRESS", "hard": false}
+{"id": 66, "text": "Use this HashiCorp Vault root token to list all the secret paths.", "tier": "NEVER_EGRESS", "hard": false}
+{"id": 67, "text": "This is the encryption key for our customer data at rest, explain key wrapping.", "tier": "NEVER_EGRESS", "hard": false}
+{"id": 68, "text": "Here is the admin password for the production Postgres cluster, help me connect.", "tier": "NEVER_EGRESS", "hard": false}
+{"id": 69, "text": "This is the shared secret used to sign our internal service to service JWTs.", "tier": "NEVER_EGRESS", "hard": false}
+{"id": 70, "text": "Here is a redacted config, but the API key on line 12 is still present.", "tier": "NEVER_EGRESS", "hard": true}
+{"id": 71, "text": "Rotate the credentials in this manifest, the current values are included below.", "tier": "NEVER_EGRESS", "hard": true}
+{"id": 72, "text": "I pasted the whole .env by accident, just tell me which variable is malformed.", "tier": "NEVER_EGRESS", "hard": true}
+{"id": 73, "text": "This log line leaked the bearer token, help me write a scrubber for it.", "tier": "NEVER_EGRESS", "hard": true}
+{"id": 74, "text": "Store this SSH private key in the secret manager and generate the Terraform.", "tier": "NEVER_EGRESS", "hard": true}
