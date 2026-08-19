@@ -47,4 +47,28 @@ args = SentenceTransformerTrainingArguments(
 SentenceTransformerTrainer(model=model, args=args, train_dataset=ds, loss=loss).train()
 out.mkdir(parents=True, exist_ok=True)
 model.save(str(out))
+
+# Normalise LayerNorm parameter names before the artifact is published.
+#
+# This transformers version writes the LEGACY TensorFlow-style names
+# `LayerNorm.gamma` / `LayerNorm.beta` instead of `weight` / `bias`. HF's own
+# loader silently renames them, which is why training looks fine, but every
+# other consumer (our Candle loader included) fails with "cannot find tensor
+# embeddings.LayerNorm.weight". Fixing it at SAVE time keeps the published
+# artifact standard rather than teaching each reader about a deprecated layout.
+import torch
+from safetensors.torch import load_file, save_file
+weights_path = out / "model.safetensors"
+tensors = load_file(str(weights_path))
+renamed = {}
+n_fixed = 0
+for k, v in tensors.items():
+    nk = k.replace("LayerNorm.gamma", "LayerNorm.weight").replace("LayerNorm.beta", "LayerNorm.bias")
+    if nk != k:
+        n_fixed += 1
+    renamed[nk] = v
+if n_fixed:
+    save_file(renamed, str(weights_path), metadata={"format": "pt"})
+    print(f"normalised {n_fixed} legacy LayerNorm tensor names (gamma/beta -> weight/bias)")
+
 print("saved ->", out)

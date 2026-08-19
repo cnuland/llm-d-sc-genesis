@@ -12,11 +12,17 @@ for TAX in cost sensitivity; do
   echo "================ $TAX: TRAIN ================"
   python3 train.py "$TAX" 12 || { echo "$TAX training failed"; continue; }
   echo "================ $TAX: EVALUATE (held-out) ================"
-  cd .. && ./target/release/eval-classifier \
+  cd ..
+  # Report an eval failure loudly. It previously scrolled past as a bare
+  # "Abort trap: 6" while the pipeline moved on to the next taxonomy, which is
+  # exactly how a broken artifact reaches a published number unnoticed.
+  ./target/release/eval-classifier \
       --model "training/models/$TAX" \
       --classifier "classifiers/$TAX.json" \
       --dataset "evals/datasets/$TAX-heldout.jsonl" \
-      --json "docs/benchmarks/$TAX-heldout-retrained.json"
+      --json "docs/benchmarks/$TAX-heldout-retrained.json" \
+    || echo "!!!! $TAX EVALUATION FAILED -- the trained model did not load or score !!!!"
+  ./hack/benchmark-report || true
   cd training
 done
 echo "================ PIPELINE COMPLETE ================"
