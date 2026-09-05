@@ -27,7 +27,15 @@ spec:
       initContainers:
         - name: modelcar
           image: llm-d-sc/llm-d-sc-modelcar:latest
-          command: ["/bin/sh", "-c", "cp -R /models/. /shared/"]
+          # The copy must be IDEMPOTENT. Model files are mode 444 in the
+          # modelcar image, so `cp` reproduces them read-only into the emptyDir.
+          # That volume survives container restarts, and cp cannot truncate a
+          # read-only destination even as its owner -- so a plain `cp -R` succeeds
+          # on first run and fails with EACCES on every restart thereafter,
+          # leaving the pod in Init:CrashLoopBackOff with no way to self-heal.
+          # Observed in the homelab: 329 restarts over 32h behind a classifier
+          # that scored fine offline.
+          command: ["/bin/sh", "-c", "rm -rf /shared/* /shared/.[!.]* 2>/dev/null || true; cp -R /models/. /shared/"]
           volumeMounts: [{name: models, mountPath: /shared}]
       containers:
         - name: llm-d-sc
