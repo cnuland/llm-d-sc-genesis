@@ -1,0 +1,25 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "clfeval"
+version = "0.1.0"
+description = "Classifier qualification framework for llm-d-sc semantic classifiers"
+requires-python = ">=3.10"
+dependencies = ["numpy>=1.24", "scikit-learn>=1.3", "pyyaml>=6"]
+
+[project.optional-dependencies]
+hf = ["transformers>=4.40", "torch>=2.0"]
+mlflow = ["mlflow>=2.14"]
+grpc = ["grpcio>=1.60"]
+dev = ["pytest>=7"]
+
+[project.scripts]
+clfeval = "clfeval.cli:main"
+
+[tool.setuptools.packages.find]
+include = ["clfeval*"]
+
+[tool.setuptools.package-data]
+clfeval = ["tasks/*.json", "tasks/*.yaml", "suites/*.yaml"]

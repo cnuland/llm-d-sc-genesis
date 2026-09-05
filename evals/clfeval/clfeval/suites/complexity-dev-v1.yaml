@@ -1,0 +1,31 @@
+apiVersion: eval.llm-d.ai/v1alpha1
+kind: ClassifierEvalSuite
+metadata:
+  name: complexity-dev-v1
+spec:
+  description: >
+    Fast dev-loop suite. Same evaluation code as production -- only the data and
+    the policy differ. Warnings are permitted and the runtime plane is not
+    required, because a dev loop is iterating on the model plane.
+  task: complexity
+  datasets:
+    - id: real-gold
+      path: data/eval/complexity-real-gold.jsonl
+      role: qualification
+      provenance: real-traffic
+      label_source: llm-jury
+      jury_models: 3
+    - id: real-contested
+      path: data/eval/complexity-real-contested.jsonl
+      role: contested
+      provenance: real-traffic
+      label_source: llm-jury
+      jury_models: 3
+  metrics:
+    required: [accuracy, majority_baseline, lift_over_chance, minority_share, macro_f1]
+  controls: [baseline_lift, seed_stability, corpus_immutability]
+  promotion:
+    primary_metric: lift_over_chance
+    allow_warnings: true
+    require_planes: [classifier_quality]
+    require_reproducible: false

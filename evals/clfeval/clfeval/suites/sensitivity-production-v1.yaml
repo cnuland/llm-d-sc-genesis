@@ -1,0 +1,58 @@
+apiVersion: eval.llm-d.ai/v1alpha1
+kind: ClassifierEvalSuite
+metadata:
+  name: sensitivity-production-v1
+spec:
+  description: >
+    Production qualification for the sensitivity signal. Gates egress, so the
+    promotion policy forbids warnings and requires the runtime plane: a classifier
+    that scores well offline and is not answering on the serving path has not been
+    qualified for this decision.
+  task: sensitivity
+  datasets:
+    - id: entsec-gold
+      path: data/eval/sensitivity-entsec-gold.jsonl
+      role: qualification
+      provenance: synthetic
+      label_source: llm-jury
+      jury_models: 3
+      separability_from_production: 0.958
+      notes: >
+        Synthetic enterprise text. Real consumer traffic is ~93% PUBLIC and cannot
+        exercise the egress tiers at all, which is why this corpus exists -- and
+        why traffic_alignment will not pass until a real sample is labelled.
+    - id: entsec-contested
+      path: data/eval/sensitivity-entsec-contested.jsonl
+      role: contested
+      provenance: synthetic
+      label_source: llm-jury
+      jury_models: 3
+  metrics:
+    required:
+      - accuracy
+      - majority_baseline
+      - lift_over_chance
+      - minority_share
+      - macro_f1
+      - calibration/ece
+      - gate/NEVER_EGRESS/containment
+      - gate/NEVER_EGRESS/released_to_lowest
+  controls:
+    - baseline_lift
+    - seed_stability
+    - holdout_integrity
+    - matched_operating_point
+    - calibration
+    - traffic_alignment
+    - runtime_slo
+    - corpus_immutability
+  runtime:
+    max_p95_ms: 20
+    max_p99_ms: 40
+  promotion:
+    primary_metric: lift_over_chance
+    minimum_lift_over_baseline: 0.20
+    max_regression_vs_champion: 0.005
+    allow_warnings: false
+    require_planes: [classifier_quality, decision_quality, runtime_quality, traffic_validity]
+    require_reproducible: true

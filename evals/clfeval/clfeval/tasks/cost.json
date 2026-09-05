@@ -1,0 +1,27 @@
+{
+ "signal": "cost",
+ "taxonomy_version": "v1",
+ "description": "Generation-length budget and capacity reservation. Driven by how much text must be produced, not by reasoning difficulty.",
+ "labels": [
+  "MINIMAL",
+  "LOW",
+  "MODERATE",
+  "HIGH"
+ ],
+ "ordered": true,
+ "gates": [
+  {
+   "at": "HIGH",
+   "action": "escalate"
+  }
+ ],
+ "noise_floor": 0.0135,
+ "folds": {
+  "genlen": {
+   "MINIMAL": "SHORT",
+   "LOW": "SHORT",
+   "MODERATE": "LONG",
+   "HIGH": "LONG"
+  }
+ }
+}

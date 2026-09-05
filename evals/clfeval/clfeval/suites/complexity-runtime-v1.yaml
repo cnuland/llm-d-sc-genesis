@@ -1,0 +1,48 @@
+apiVersion: eval.llm-d.ai/v1alpha1
+kind: ClassifierEvalSuite
+metadata:
+  name: complexity-runtime-v1
+spec:
+  description: >
+    Runtime qualification against a live llm-d-sc deployment. Requires the runtime
+    plane and pins the artifact identity, so benchmarking a deployment other than
+    the one under qualification is an impossible state rather than a discipline.
+  task: complexity
+  datasets:
+    - id: real-gold
+      path: data/eval/complexity-real-gold.jsonl
+      role: qualification
+      provenance: real-traffic
+      label_source: llm-jury
+      jury_models: 3
+    - id: real-contested
+      path: data/eval/complexity-real-contested.jsonl
+      role: contested
+      provenance: real-traffic
+      label_source: llm-jury
+      jury_models: 3
+  metrics:
+    required: [accuracy, majority_baseline, lift_over_chance, minority_share, macro_f1]
+  controls:
+    - baseline_lift
+    - runtime_slo
+    - artifact_identity
+    - corpus_immutability
+  # The production invariant: a classifier is not qualified at a traffic level
+  # unless the required share of requests actually receives a classification.
+  runtime:
+    min_classification_coverage: 0.999
+    max_p95_ms: 20
+    max_p99_ms: 40
+  # What the runtime must REPORT it is serving. Empty means "record but do not
+  # pin", which downgrades artifact_identity to WARN rather than passing silently.
+  expectedIdentity:
+    model_revision: ""
+    taxonomy_revision: ""
+  requiredPlanes: [classifier_quality, runtime_quality]
+  promotion:
+    primary_metric: lift_over_chance
+    minimum_lift_over_baseline: 0.15
+    allow_warnings: true
+    require_planes: [classifier_quality, runtime_quality]
+    require_reproducible: false

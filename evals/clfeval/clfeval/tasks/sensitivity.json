@@ -1,0 +1,49 @@
+{
+ "signal": "sensitivity",
+ "taxonomy_version": "v1",
+ "description": "Whether the request may egress to an external provider. Ordered by escalating exposure; assign the highest tier that applies.",
+ "labels": [
+  "PUBLIC",
+  "INTERNAL",
+  "CONFIDENTIAL",
+  "REGULATED",
+  "NEVER_EGRESS"
+ ],
+ "ordered": true,
+ "gates": [
+  {
+   "at": "CONFIDENTIAL",
+   "action": "escalate"
+  },
+  {
+   "at": "REGULATED",
+   "action": "escalate"
+  },
+  {
+   "at": "NEVER_EGRESS",
+   "action": "block"
+  }
+ ],
+ "noise_floor": 0.0014,
+ "folds": {
+  "egress": {
+   "PUBLIC": "ALLOW",
+   "INTERNAL": "ALLOW",
+   "CONFIDENTIAL": "ALLOW",
+   "REGULATED": "ALLOW",
+   "NEVER_EGRESS": "BLOCK"
+  },
+  "egress_triage": {
+   "PUBLIC": "ALLOW",
+   "INTERNAL": "REVIEW",
+   "CONFIDENTIAL": "REVIEW",
+   "REGULATED": "REVIEW",
+   "NEVER_EGRESS": "BLOCK"
+  }
+ },
+ "abstention": {
+  "enabled": true,
+  "fallback_class": "CONFIDENTIAL",
+  "max_abstain_rate": 0.1
+ }
+}
