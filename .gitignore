@@ -9,3 +9,10 @@ node_modules/
 # the pipeline, so only the pipeline itself is version-controlled.
 training/data/
 training/models/
+
+# direnv environment files. These hold live credentials (ANTHROPIC_API_KEY and
+# similar) and must never be committed. Ignored rather than merely untracked,
+# because "untracked" is one `git add -A` away from a leaked key.
+.envrc
+.envrc.local
+.direnv/
