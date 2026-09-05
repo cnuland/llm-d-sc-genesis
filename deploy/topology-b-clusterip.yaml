@@ -35,7 +35,10 @@ spec:
           # leaving the pod in Init:CrashLoopBackOff with no way to self-heal.
           # Observed in the homelab: 329 restarts over 32h behind a classifier
           # that scored fine offline.
-          command: ["/bin/sh", "-c", "rm -rf /shared/* /shared/.[!.]* 2>/dev/null || true; cp -R /models/. /shared/"]
+          # `set -e` is load-bearing: without it a failed cp still exits 0 and the
+          # pod starts a classifier with no model -- a silent bad deployment rather
+          # than a visible crashloop.
+          command: ["/bin/sh", "-c", "set -e; rm -rf /shared/* /shared/.[!.]* 2>/dev/null || true; cp -R /models/. /shared/; echo modelcar staged: $(ls /shared | wc -l) entries"]
           volumeMounts: [{name: models, mountPath: /shared}]
       containers:
         - name: llm-d-sc
